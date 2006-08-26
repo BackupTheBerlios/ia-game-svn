@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Détails sur l'implémentation</title>
+</head>
+<body>
+
+<h2>Jeu : Concepts généraux</h2>
+
+  <p align="justify">
+  J'ai essayé de mettre en oeuvre les concepts décrits à la figure 1. La classe {@link jeu.shazamm.core.EtatJeu EtatJeu} contient toutes les informations sur l'état du jeu (et donc des {@link jeu.shazamm.core.Joueur Joueurs} et du {@link jeu.shazamm.core.Plateau Plateau} de jeu). En principe, la classe {@link jeu.shazamm.core.Jeu Jeu} est responsable des règles du jeu et, en fonction des {@link jeu.shazamm.core.Coup Coups}, fait évoluer l'état du jeu (ou prévient si une règle est violée).
+  </p>
+
+  <p align="center">
+    <img src="ressources/jeu_general.png"
+       alt="Schéma Général Jeu"><br>
+    <b>Figure 1</b> : Concepts généraux mis en oeuvre
+  </p>
+
+  <p align="justify">
+  Les {@link jeu.shazamm.core.Coup Coups} sont générés en utilisant la classe {@link jeu.shazamm.core.CoupFactory CoupFactory} de plusieurs manière :
+
+  <ul>
+    <li> à partir d'un <code>String</code> qui est décodé (ce qui permet de définir aisément un <code>Coup</code> à partir du clavier ou d'un fichier).</li>
+  </ul>
+  </p>
+
+<h2>Application à Shazamm</h2>
+
+<h3>Joueurs</h3>
+
+  <p align="justify">
+  Un joueur par couleur (<code>int</code> qui vaut {@link jeu.shazamm.core.Constantes#VERT Consantes.VERT} ou {@link jeu.shazamm.core.Constantes#ROUGE Constantes.ROUGE}). Ils ont du mana et des sorts (répartis entre une pioche, une main, des sorts joués et les sorts joués au tour précédent).
+  </p>
+
+  <p align="justify">
+  Un joueur peut être dans un des états suivants, en fonction de l'état du jeu et des coups joués.<br>
+  <ul>
+  
+    <li>Constantes.DOIT_MISER : on attend un coup {@link jeu.shazamm.coup.MiseC MiseC}.</li>
+    
+    <li>Constantes.DOIT_CLONER : après avoir joué un clone, on attend un {@link jeu.shazamm.coup.CloneC CloneC}.</li>
+
+    <li>Constantes.DOIT_VOLER : après avoir joué un larcin, on attend un {@link jeu.shazamm.coup.LarcinC LarcinC}.</li>
+
+    <li>Constantes.DOIT_RECYCLER : après avoir joué un recyclage, on attend un {@link jeu.shazamm.coup.RecyclageC RecyclageC}.</li>
+
+    <li>Constantes.DOIT_ATTENDRE : on attend après l'autre joueur. Quand les deux joueurs sont dans cet état, alors l'état du jeu est mis à jour par un {@link jeu.shazamm.core.Jeu#update(EtatJeu jeu) Jeu.update()}.</li>
+  </ul>
+  </p>
+
+<h3>Coups possibles</h3>
+
+  <p align="justify">
+
+  <ul>
+    <li><b>MiseC</b> <code>j:m(xx)[,s( yy, zz,...)]</code> -> le joueur "j" a misé "xx" et éventuellement joué les sorts "yy" et "zz". On peut ne pas jouer de sorts.</li>
+
+    <li><b>CloneC</b><code>j:c([xx])</code> -> le joueur "j" a éventuellement cloné le sort "xx".</li>
+
+    <li><b>LarcinC</b><code>j:v([xx,yy])</code> -> le joueur "j" a éventuellement volé les sorts "xx" et "yy". Les autres sorts joués par l'autre joueur sont alors détruits.</li>
+
+    <li><b>RecyclageC</b><code>j:r(+-x)</code> -> le joueur "j" a recyclé +/- "x" points de mana.</li>
+  </ul>
+  </p>
+
+<h3>Cartes</h3>
+
+  <p align="justify">
+  En utilisant les méthodes {@link jeu.shazamm.core.Carte#effet( EtatJeu etat, Joueur benificiaire) Carte.effet()}, on modifie l'état du jeu, déclenche des mise à jour ou des fin de manche.
+  </p>
+
+</body>
+</html>
