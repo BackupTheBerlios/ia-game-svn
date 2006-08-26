@@ -1,0 +1,69 @@
+		// *************************************************
+		// *************************************************
+		// *************************************************
+		// *************************************************
+		// *************************************************
+
+
+		//// VIEUX VIEUX VIEUX VIEUX -----------------------
+        boolean manaVide = false;
+
+        
+        // fait se déplacer le mur.
+        if( etat.getJoueur( Plateau.ROUGE ).mana.strikeForce >
+                etat.getJoueur( Plateau.VERT).mana.strikeForce ) {
+            etat.zePlateau.moveFire( Plateau.VERS_VERT);
+        }
+        else if( etat.getJoueur( Plateau.ROUGE ).mana.strikeForce <
+                etat.getJoueur( Plateau.VERT).mana.strikeForce ) {
+            etat.zePlateau.moveFire( Plateau.VERS_ROUGE);
+        }
+        
+        // on met à jour le Mana
+        for( int i=0; i < etat.zeJoueurs.length; i++) {
+            manaVide = manaVide || etat.zeJoueurs[i].mana.update();
+        }
+        
+        // si le Mana est vide
+        if( etat.getJoueur( Plateau.ROUGE ).mana.manaAfter == 0 ) {
+            while( etat.getJoueur( Plateau.VERT).mana.manaAfter > 0 ) {
+                etat.zePlateau.moveFire( Plateau.VERS_ROUGE);
+                etat.getJoueur( Plateau.VERT ).mana.manaAfter--;
+            }
+        }
+        else if( etat.getJoueur( Plateau.VERT ).mana.manaAfter == 0 ) {
+            while( etat.getJoueur( Plateau.ROUGE).mana.manaAfter > 0 ) {
+                etat.zePlateau.moveFire( Plateau.VERS_VERT);
+                etat.getJoueur( Plateau.ROUGE ).mana.manaAfter--;
+            }
+        }
+        // le nouvel EtatJeu
+        EtatJeu result = new EtatJeu( etat );
+        for( int i=0; i < result.zeJoueurs.length; i++) {
+            result.zeJoueurs[i].mana.prepareNewBet();
+        }
+        return result;
+    }
+
+}
+
+// ***************************** DE JOUEUR ***************************
+		// ******** EtatJeu ???? ***************************
+            return true;
+        }
+        return false;
+       
+    }
+
+    /**
+     * Un joueur en fonction de sa String de couleur.
+     * @param etat
+     * @param couleurStr
+     * @return 
+     */
+    public Joueur getJoueur( EtatJeu etat, String couleurStr )
+    {
+        return etat.getJoueur( Constantes.decodeCoul( couleurStr ));
+    }
+}
+		// *************************************************
