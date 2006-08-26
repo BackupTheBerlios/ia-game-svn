@@ -1,0 +1,105 @@
+\def\mana{\verb$mana$}
+\def\sorts{\verb$sorts$}
+\def\Amana{\verb$adv_mana$}
+\def\Asorts{\verb$adv_sorts$}
+
+
+\section{Possibilités}
+\label{sec:possible}
+
+Apprendre des bibliothèques d'ouverture (cf Sec. \ref{sec:bibli_open}), éventuellement en les déclinant par joueur.
+
+Utiliser StatGame (cf Sec. \ref{sec:statgame:statgame}) dans les cas de mutisme, éventuellement en le déclinant par joueur.
+
+
+\section{Etat}
+\label{sec:etat}
+
+D'une manière naïve, on pourrait dénombrer le nombre d'états possibles du jeu comme suit~:
+\begin{itemize}
+\item{\bf \mana}~: $51$
+\item{\bf \sorts}~: $3^{14} = 2744$ (pas joué, en main, joué).
+\item{\bf \Amana }~: $51$
+\item{\bf \Asorts}~: $2^{14} = 196$ (pas joué, joué).
+\item{\bf pos. milieu}~: $9$
+\item{\bf pos. mur}~: $5$ ($\in [-2; 2]$).
+\item{\bf manche}~: $7$
+\item{\bf mutisme}~: $2$ (oui ou non).
+\end{itemize}
+Ce qui fait quand même $881.294.541.120$ possibilités. Bref, c'est beaucoup trop!
+
+\section{Action}
+\label{sec:action}
+
+Toujours en étant naïf, on a, au pire, comme possibilités de jeu~:
+\begin{itemize}
+\item{\bf mana}~: $51$
+\item{\bf sorts}~: $2^{14} = 196$ (pas joué, joué).
+\end{itemize}
+Ce qui fait $9.996$ possibilités.
+
+\section{Bibliothèque d'ouvertures}
+\label{sec:bibli_open}
+
+Une possibilité est de s'inspirer des parties jouées pour générer des bibliothèques de coups, en particulier de coups d'ouverture. En pratique, il suffit de compter des occurences. Et on peut même ne garder que les coups qui sont au dessus d'une certaine fréquence.
+
+En ouverture, par exemple, on pourrait ne considérer dans l'état que les sorts disponibles (ceux qui ont été joué lors de la première manche). Cela fait $C_{14}^{5}=2002$ (??) ( $5$ sorts max.) états, et pour chacun de ces états $2^5 \times 50 = 1600$ coups possibles... ( \sorts $\times$ \mana).
+
+On peut penser à des choses similaires pour les ouvertures suivantes, éventuellement en pondérant par le gain ou la perte de la première manche. Si on tient compte des sorts joués (par agent ou adversaire), là encore on doit exploser rapidement...
+
+\section{StatGame et autres}
+\label{sec:statgame}
+
+Ces remarques proviennent de l'étude du code de Philippe Mathieu.
+
+Les jeux étudiés sont des jeux à deux joueurs avec information partielle {\em à un état}, avec un {\em ensemble d'actions fixe} où le résultats final (gagné, perdu ou nul) est {\em connu immédiatement}. L'exemple typique est {\em pierre, papier, ciseaux}. Le principe général est alors d'anticiper le coup adverse pour alors choisir la {\em meilleure réponse}. 
+
+De manière immédiate, Shazamm possède plusieurs états, un ensemble de coup à jouer qui varie et on ne sait pas immédiatement si on a gagné. Néanmoins, une analogie possible pour Shazamm serait de considérer le résultat immédiat en terme d'avancée du feu. Quant à la meilleure réponse, on peut toujours se dire qu'il est possible de la {\em calculer} (voire de l'{\em apprendre}) une fois qu'on connaît le coup adverse... Mais la transposition est loin d'être immédiate. 
+
+\subsection{Stratégie de Shannon}
+\label{sec:statgame:shannon}
+
+Pour anticiper le coup de l'adversaire, on se pose la question de savoir s'il va changer son coup ou garder le même que ce qu'il vient juste de jouer. Plus précisément, pour chacun triplet $( \mathrm{win}_{t-2}, \mathrm{coup}_{t-1}, \mathrm{win}_{t-1})$ on mémorise si l'adversaire a gardé le même coup ou pas la dernière fois qu'il s'est trouvé confronté à cette situation.
+
+Ainsi, si l'on note~:
+\begin{itemize}
+\item $W$ quand l'adversaire à gagné et $L$ quand il a perdu.
+\item $S$ quand il a gardé le même coup et $D$ quand il en a changé.
+\end{itemize}
+Il suffit de mémoriser pour chacun des triplets ($WSW$, $WSL$, $WDW$, $WDL$, $LSW$, $LSL$, $LDW$ et $LDL$) ce qu'a fait l'adversaire ($S$ ou $D$) la dernière fois. Il y a une part de hasard puisque que si l'on prévoit que l'adversaire va changer son coup, il faut alors choisir au hasard son nouveau coup prévu.
+
+Dans le cas de Shazamm, cela ne semble pas simple à mettre en oeuvre. De fait, il est souvent impossible de jouer deux fois de suite le même coup. Cela revient à dire que l'on prévoit que l'adversaire va jouer au hasard.
+
+\subsection{Stratégie de StatGame}
+\label{sec:statgame:statgame}
+
+Il y a 4 versions de StatGame, de la plus simple à la plus sophistiquée. Le but est évidement de prévoir le coup de l'adversaire.
+\begin{itemize}
+\item{\bf StatGame1}~: le coup le plus fréquemment joué précédemment ou un coup au hasard si plusieurs coups les plus fréquents.
+\item{\bf StatGame2}~: le coup le plus fréquent au sein d'un historique de longeur $l$ fixée (ou au hasard).
+\item{\bf StatGame3}~: Au sein d'un historique de longueur $l$; on tient compte des $n$ coups précédent pour déterminer la fréquence (ou alors hasard parmi les successeurs possibles).
+\item{\bf StatGame4}~: Au sein d'un historique de longueur $l$; le nombre de coups précédents pris en compte est incrémentalement augmenté (en commençant par $1$) pour arriver à déterminer {\em le} coup successeur le plus joué.
+\end{itemize}
+
+Dans le cas de Shazamm, cela semble difficile à mettre en oeuvre à cause du nombre de coups précédents et de situations possibles. On peut éventuellement le mettre en oeuvre dans le cas d'un mutisme où il y a $50 \times 50 = 250$ configurations possibles, et $50$ coups possibles pour l'adversaire.
+
+\section{Apprentissage par Renforcement}
+\label{sec:AR}
+
+
+\subsection{Principe}
+\label{sec:AR:principe}
+
+
+
+\subsection{TDGammon}
+\label{sec:AR:TDGammon}
+
+
+\subsection{Approximation}
+\label{sec:AR:approximation}
+
+
+\subsection{Sagace}
+\label{sec:AR:Sagace}
+

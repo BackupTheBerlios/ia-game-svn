@@ -1,0 +1,475 @@
+
+/* AVERTISSEMENT BIEN DEBILE QUE JE GARDE EXPRES !???!
+ *
+ * Copyright © 2002 Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+ * California 95054, U.S.A. All rights reserved.  Sun Microsystems, Inc. has
+ * intellectual property rights relating to technology embodied in the product
+ * that is described in this document. In particular, and without limitation,
+ * these intellectual property rights may include one or more of the U.S.
+ * patents listed at http://www.sun.com/patents and one or more additional
+ * patents or pending patent applications in the U.S. and in other countries.
+ * U.S. Government Rights - Commercial software. Government users are subject
+ * to the Sun Microsystems, Inc. standard license agreement and applicable
+ * provisions of the FAR and its supplements.  Use is subject to license terms.
+ * Sun,  Sun Microsystems,  the Sun logo and  Java are trademarks or registered
+ * trademarks of Sun Microsystems, Inc. in the U.S. and other countries.  This
+ * product is covered and controlled by U.S. Export Control laws and may be
+ * subject to the export or import laws in other countries.  Nuclear, missile,
+ * chemical biological weapons or nuclear maritime end uses or end users,
+ * whether direct or indirect, are strictly prohibited.  Export or reexport
+ * to countries subject to U.S. embargo or to entities identified on U.S.
+ * export exclusion lists, including, but not limited to, the denied persons
+ * and specially designated nationals lists is strictly prohibited.
+ */
+
+/**
+ * Pour utiliser ce fichier seul, il faut javacc.
+ * - javacc BAJParser.jj
+ * - javac -cp .:Shazamm_bin.jar BAJParser*.java
+ * - java -cp .:Shazamm_bin.jar BAJParser < fichier entrée
+ */
+
+
+PARSER_BEGIN(BAJParser)
+/**
+ * AVERTISSEMENT : Ces fichiers sont générés de manière automatique par JavaCC
+ * à partir du fichier BAJParser.jj
+ */
+
+package jeu.shazamm.parser;
+
+import java.util.*;
+import jeu.shazamm.coup.*;
+import jeu.shazamm.core.*;
+
+public class BAJParser {
+
+  //public  ArrayList historique;
+  public  HistoriqueCoup historique;
+  public  ArrayList listePartie;
+
+  int numCloneur; // joueur qui vient de jouer clone.
+  int numVoleur; // joueur qui vient de jouer larcin.
+  int numRecycleur; // joueur qui vient de jouer recyclage.
+
+  /**
+   * Initialisation
+   */
+  public void init() 
+  {
+     //historique = new ArrayList();
+     historique = new HistoriqueCoup();
+     listePartie = new ArrayList();
+
+     numCloneur = Constantes.NO_COLOR;
+     numVoleur = Constantes.NO_COLOR;
+     numRecycleur = Constantes.NO_COLOR;
+  }
+
+//  public static void main(String args[]) throws ParseException {
+//    BAJParser parser = new BAJParser(System.in);
+//    parser.init();
+//    parser.Input();
+//  }
+
+}
+
+PARSER_END(BAJParser)
+
+// Lexical specification
+// repris d'ailleurs je pense...
+TOKEN:
+{
+  <#EOL: "\n" | "\r" | "\r\n">
+|
+  <#TWOEOLS: (("\n"|"\r\n") <EOL>) | ("\r\r" [ "\n" ])>
+|
+  <#NOT_EOL: ~["\n","\r"]>
+}
+
+<DEFAULT>
+SKIP:
+{
+  <~[]>
+}
+
+// Quelques Token pour Shazamm
+//     kwCoupManche : "MANCHE N" suivit du premier int trouvé
+//     kwCoupTour : ...
+//     kwBilanMise : "BILAN DES MISES" suivit d'une MISE
+//    
+TOKEN:
+{
+  <kwCoupManche : "MANCHE N"> : NUM_INT
+|
+  <kwCoupTour : "TOUR N"> : NUM_INT
+|
+  <kwBilanMise : "BILAN DES MISES"> : MISE
+|
+  <kwMise : "\">Mise<"> : MISE
+|
+  <kwSorts : "\">Sorts<" > : MISE
+|
+  <kwClonage : "Clonage" > : MISE 
+|
+  <kwDestruction : "Destruction de" > : MISE
+|
+  <kwVol: "Vol de" > : MISE
+|
+  <kwRecyclage : "Recyclage de" > : MISE
+|
+  <kwLienPartie : "clLienPartie"> 
+|
+  <kwRefPartie : "partie.php?id="> : NUM_INT
+|
+  <kwDernierResultats : "DERNIERS RESULTATS">
+}
+
+
+// Pour les mises on fait des trucs sioux
+//    joueur : tjs un truc du genre ">id_joueur<"
+//    mise : c'est un chiffre ">##<"
+//    sort : on se sert de l'image de la carte qui contient "##r" ou "##v"
+//    sort cloné : rien ou int
+//    il faut aussi repérer les "</tr>"
+<MISE>
+SKIP :
+{
+  "&nbsp;"
+| <~[]>
+}
+<MISE>
+TOKEN :
+{
+  <idMise : ">" (" ")* (["0"-"9"])+ "<" >
+|
+  <idJoueur : ">" ["a"-"z","A"-"Z","_","é","è","ê","â","ô","ù","û"] ( ["a"-"z","A"-"Z","_"," ","0"-"9","é","è","ê","â","ô","ù","û"] )* "<" >
+|
+  <idSort : ["0"-"9"] ["0"-"9"] ["r","v"]>
+|
+  <idClone : "de " (["0"-"9"])* " -">
+|
+  <idVol : (["0"-"9"])+ "<" >
+|
+  <idRec : (["-","0"-"9"])+ " pts" >
+|
+  <END_TR : "</tr>"> : DEFAULT
+|
+  <kwmVol: "Vol de" > : MISE
+}
+
+// Un NUM_INT est le premier entier trouvé
+// on SKIP tout ce qui n'est pas un chiffre
+// pour se focaliser sur le premier groupe de chiffre "###"
+<NUM_INT>
+SKIP :
+{
+  <~["0"-"9"]>
+}
+<NUM_INT>
+TOKEN :
+{
+  <NUM: ( ["0"-"9"] )+ > : DEFAULT
+}
+
+// Un fichier est une suite de 'coup'
+void Input() :
+	{
+		init();
+	}
+{ 
+  ( coup() )* 
+  <EOF>
+}
+
+// Un coup en entier
+// MANCHE , TOUR, MISE
+void coup() :
+	{ 
+	  int manche;
+	  int tour;
+	}
+{
+  manche = getMancheTour()
+  tour = getMancheTour()
+  {
+    System.out.println( "Reconnu Manche = "+manche+ ", Tour = "+tour);
+  }
+  getMise()
+}
+
+// Quel est No de la MANCHE ou du TOUR
+int getMancheTour() :
+{
+	Token num;	
+}
+{
+  (<kwCoupManche> | <kwCoupTour>) 
+  num=<NUM>
+   	{
+	   // DEBUG System.out.println( "Num vaut "+num.image.toString() );
+	   return Integer.parseInt( num.image.toString() );
+	}
+}
+
+// mise des joueurs
+// BILAN DES MISES, id_joueur1 (R), id_joueur2 (V), END_TR, nb_pts1, nb_pts2, (sorts)*
+//
+void getMise() :
+{
+	Token id1, id2, miseT, sortT, sortC, sortV, recT, idC, idV, idR;
+	String joueur1, joueur2, miseStr, sortStr, sortCStr, sortVStr, recTStr;
+        int mise1, mise2, nbRec;
+	ArrayList sorts1, sorts2;
+	Coup coup1, coup2;
+
+	sorts1 = new ArrayList();
+	sorts2 = new ArrayList();
+
+	coup1 = null;
+	coup2 = null;
+
+	numCloneur = Constantes.NO_COLOR;
+}
+{
+  <kwBilanMise>
+  id1=<idJoueur>
+    {
+	// joueur1 est rouge
+	joueur1 = id1.image.toString();
+	joueur1 = joueur1.substring( 1, joueur1.length()-1 );
+	System.out.println( "Joueur1 = " + joueur1 );
+	historique.nomJoueurRouge = joueur1;
+    }
+  id2=<idJoueur>
+    {
+        // joueur2 est vert
+	joueur2 = id2.image.toString();
+	joueur2 = joueur2.substring( 1, joueur2.length()-1 );
+	System.out.println( "Joueur2 = " + joueur2 );
+	historique.nomJoueurVert = joueur2;
+    }
+  <END_TR>
+  <kwMise>
+  miseT=<idMise>
+    {
+       miseStr =  miseT.image.toString();
+       miseStr = miseStr.substring( 1, miseStr.length()-1 );
+       mise1 = Integer.parseInt( miseStr);
+       System.out.println( joueur1 + " -> " + mise1 + " pts"  );
+    }
+  miseT=<idMise>
+    {
+       miseStr =  miseT.image.toString();
+       miseStr = miseStr.substring( 1, miseStr.length()-1 );
+       mise2 = Integer.parseInt( miseStr);
+       System.out.println( joueur2 + " -> " + mise2 + " pts"  );
+    }
+  <END_TR>
+  <kwSorts>
+  (
+    sortT=<idSort>
+      {
+         sortStr = sortT.image.toString();
+	 int numSort = Integer.parseInt( sortStr.substring(0,2) );
+         int numJoueur = (sortStr.charAt(2) == 'r' ? 1 : 2);
+         System.out.println( "Joueur"+numJoueur+" : sort_"+numSort );
+
+	 if( numJoueur == 1 ) {
+            sorts1.add( new Integer( numSort ));
+	 }
+         else {
+            sorts2.add( new Integer( numSort ));
+         }
+	if( numSort == 2 ) { // clone
+	    numCloneur = numJoueur;
+	}
+	if( numSort == 3 ) { // larcin
+            numVoleur = numJoueur;
+	}
+	if( numSort == 6 ) { // recyclage
+            numRecycleur = numJoueur;
+	}
+      }
+  )*
+  <END_TR>
+//  <END_TR>
+  { 
+     coup1 = new MiseC( Constantes.ROUGE, mise1, sorts1 );
+     coup2 = new MiseC( Constantes.VERT, mise2, sorts2 );
+     System.out.println( "Coup1 = " + coup1.toString() );
+     System.out.println( "Coup2 = " + coup2.toString() );
+
+     historique.add( coup1 );
+     historique.add( coup2 );
+
+     sorts1.clear();
+     sorts2.clear();
+  }
+  (
+   //idC=<idJoueurNext>
+   <kwClonage> 
+    sortC=<idClone>
+      {
+	sortCStr = sortC.image.toString();
+        // cherche si un sort est cloné
+        if( sortCStr.length() > 5 ) {
+          int numSort = Integer.parseInt( sortCStr.substring(3, sortCStr.indexOf("-")-1));
+	  System.out.println( "Le sort -"+numSort+"- est cloné par "+numCloneur );
+	  if( numSort == 3 ) numVoleur = numCloneur;
+	  if( numSort == 6 ) numRecycleur = numCloneur;
+          if (numCloneur == 1) {
+             sorts1.add( new Integer( numSort ));
+          }
+          else {
+             sorts2.add( new Integer( numSort ));
+	  }
+	}
+	else {
+	  System.out.println( "Aucun sort n'est cloné!");
+	}
+      }
+   <END_TR>
+   {
+     if (numCloneur == 1) {
+       coup1 = new CloneC( Constantes.ROUGE, sorts1);
+       System.out.println( "Coup1 = " + coup1.toString() );
+       historique.add( coup1 );
+     }
+     if (numCloneur == 2) {
+       coup2 = new CloneC( Constantes.VERT, sorts2);
+       System.out.println( "Coup2 = " + coup2.toString() );
+       historique.add( coup2 );
+     }
+     sorts1.clear();
+     sorts2.clear();
+   }
+  )?
+  (
+   //idV=<idJoueurNext>
+  (
+   (<kwDestruction>
+      sortT=<idVol>
+        {
+	  sortVStr = sortT.image.toString();
+          int numDest = Integer.parseInt( sortVStr.substring(0, sortVStr.length()-1  ));
+          System.out.println( "Le sort -"+numDest+"- est détruit");
+        }
+   )
+   |
+   ((<kwVol>|<kwmVol>)
+      sortT=<idVol>
+        {
+          sortVStr = sortT.image.toString();
+          int numVol = Integer.parseInt(  sortVStr.substring(0, sortVStr.length()-1  ));
+          System.out.println( "Le sort -"+numVol+"- est volé par "+numVoleur);
+	  if (numVol == 6) {
+            // il faut changer le numRecycleur
+            numRecycleur = numVoleur;
+          }
+          if (numVoleur == 1) {
+             sorts1.add( new Integer( numVol ));
+          }
+          else {
+             sorts2.add( new Integer( numVol ));
+	  }
+        }
+   )
+  )*
+  <END_TR>
+   {
+     if (numVoleur == 1) {
+       coup1 = new LarcinC( Constantes.ROUGE, sorts1);
+       System.out.println( "Coup1 = " + coup1.toString() );
+       historique.add( coup1 );
+     }
+     if (numVoleur == 2) {
+       coup2 = new LarcinC( Constantes.VERT, sorts2);
+       System.out.println( "Coup2 = " + coup2.toString() );
+       historique.add( coup2 );
+     }
+     sorts1.clear();
+     sorts2.clear();
+   }
+  )?
+  (
+//   idR=<idJoueurNext>
+//    {
+        // joueur du Recyclage
+//	joueurR = idR.image.toString();
+//	joueurR = joueurR.substring( 1, joueurR.length()-3 );
+//	System.out.println( "JoueurR = " + joueurR );
+//	if( joueurR.equals( joueur1 )) {
+//          numRecycleur = 1;
+//        }
+//        else {
+//          numRecycleur = 2;
+//        }
+//    }
+   <kwRecyclage> 
+    recT=<idRec>
+      {
+	recTStr = recT.image.toString();
+        nbRec= Integer.parseInt( recTStr.substring(0, recTStr.indexOf("p")-1));
+	System.out.println( "Recyclage de "+nbRec+" pts par "+numRecycleur );
+      }
+   <END_TR>
+   {
+     if (numRecycleur == 1) {
+       coup1 = new RecyclageC( Constantes.ROUGE, nbRec);
+       System.out.println( "Coup1 = " + coup1.toString() );
+       historique.add( coup1 );
+     }
+     if (numRecycleur == 2) {
+       coup2 = new RecyclageC( Constantes.VERT, nbRec);
+       System.out.println( "Coup2 = " + coup2.toString() );
+       historique.add( coup2 );
+     }
+   }
+  )?
+//  (<END_TR>)*
+//  {
+//    if (coup1 != null) {
+//      System.out.println( "Coup1 = " + coup1.toString() );
+//    }
+//    if (coup2 != null) {
+//      System.out.println( "Coup2 = " + coup2.toString() );
+//    }
+//  }
+}
+// Une recherche est une suite de parties...
+void rechercheListe() : 
+	{
+           init();
+        }
+{ 
+  ( partie() )* 
+  <kwDernierResultats>
+  (<kwRefPartie><NUM>)*
+  <EOF>
+}
+
+// Liens vers une partie
+// 2 liens (un pour le numéro, un pour le nom)
+int partie() : 
+	{ 
+          Token num;
+	  int idPartie;
+	}
+{
+  
+  <kwLienPartie>
+  <kwRefPartie>
+  <NUM>
+  
+  <kwLienPartie>
+  <kwRefPartie>
+  num=<NUM>
+   	{
+	   // DEBUG System.out.println( "Num vaut "+num.image.toString() );
+	   idPartie = Integer.parseInt( num.image.toString() );
+           listePartie.add( new Integer( idPartie ));
+	   System.out.println("Partie no = "+idPartie);
+	   return idPartie;
+	}
+}

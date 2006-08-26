@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Built file pour le projet-->
+<project name="Shazamm" default="dist" basedir=".">
+	<!-- Les répertoires utilisés -->
+	<property name="dir.dist" value="dist">
+	</property>
+	<property name="dir.bin" value="bin">
+	</property>
+	<property name="dir.src" value="src">
+	</property>
+	<property name="dir.doc" value="doc">
+	</property>
+	<property name="dir.data" value="data">
+	</property>
+	<property name="dir.publish" value="/home/dutech/Loria/HTML/WWW/Shazamm">
+	</property>
+
+	<!-- Des groupes de fichiers -->
+	<fileset id="files-src" dir=".">
+		<include name="${dir.src}/jeu/"/>
+	</fileset>
+	<fileset id="files-bin" dir="${dir.bin}">
+		<include name="jeu/"/>
+		<exclude name="*T_*"/>
+	</fileset>
+	<fileset id="files-doc" dir=".">
+		<include name="${dir.doc}/">
+		</include>
+	</fileset>
+	<fileset id="files-base" dir=".">
+		<include name="build.xml">
+		</include>
+	</fileset>
+	<fileset id="files-data" dir=".">
+		<include name="${dir.data}/">
+		</include>
+	</fileset>
+
+	<!-- Prépare une distribution publique -->
+	<target name="dist" depends="jar-sources, tar-sources, jar-bin">
+	</target>
+	<target name="publish-loria" depends="dist">
+		<copy todir="${dir.publish}" verbose="true">
+			<fileset>
+				<include name="${dir.dist}/*_src_*"/>
+				<include name="${dir.dist}/*_bin_*"/>	
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Distribution Classes (généré par Eclipse) -->
+	<target name="jar-bin">
+		<tstamp/>
+		<jar destfile="${dir.dist}/${ant.project.name}_bin_${DSTAMP}.jar">
+			<fileset refid="files-bin">
+			</fileset>
+		</jar>
+    </target>
+
+	<!-- Distribution Sources -->
+	<target name="tar-sources">
+		<tstamp/>
+		<tar destfile="${dir.dist}/${ant.project.name}_src_${DSTAMP}.tar">
+			<tarfileset dir=".">
+				<include name="${dir.src}/">
+				</include>
+				<include name="${dir.doc}/">
+				</include>
+				<include name="build.xml">
+				</include>
+				<include name="${dir.data}/">
+				</include>
+			</tarfileset>
+		</tar>
+		<gzip zipfile="${dir.dist}/${ant.project.name}_src_${DSTAMP}.tar.gz" src="${dir.dist}/${ant.project.name}_src_${DSTAMP}.tar">
+		</gzip>
+		<delete file="${dir.dist}/${ant.project.name}_src_${DSTAMP}.tar">
+		</delete>
+	</target>
+	<target name="jar-sources">
+		<tstamp/>
+		<jar destfile="${dir.dist}/${ant.project.name}_src_${DSTAMP}.jar">
+			<fileset refid="files-src">
+			</fileset>
+			<fileset refid="files-doc">
+			</fileset>
+			<fileset refid="files-base">
+			</fileset>
+			<fileset refid="files-data">
+			</fileset>
+		</jar>
+
+	</target>
+
+	<!-- Documentation des Sources -->
+	<target name="doc-sources">
+		<javadoc 
+			sourcepath="${dir.src}" 
+			destdir="${dir.doc}" 
+			overview="${dir.src}/jeu_concept.html" 
+			private="true" 
+			packagelist="${dir.src}/packages">
+		</javadoc>
+	</target>
+	
+	<!-- Génération des Parser avec JavaCC -->
+	<target name="generate-parser">
+		<javacc 
+			javacchome="/usr/local/javacc-3.2" 
+			target="tools/JavaCC/BAJParser.jj"
+			outputdirectory="src/jeu/shazamm/parser"
+			static="false"
+			debugparser="false"
+			debugtokenmanager="false"
+			lookahead="0"
+			forcelacheck="true">
+		</javacc>
+	</target>
+	
+	<!-- Une copie de sauvegarde -->
+	<target name="save-project">
+		<tstamp/>
+		<tar destfile="${dir.dist}/${ant.project.name}_all_${DSTAMP}.tar">
+			<tarfileset dir=".." id="file-save">
+				<include name="${ant.project.name}/.project"/>
+				<include name="${ant.project.name}/.classpath"/>
+				<include name="${ant.project.name}/build.xml"/>
+				<include name="${ant.project.name}/src/"/>
+				<include name="${ant.project.name}/data/"/>
+				<include name="${ant.project.name}/doc/"/>
+				<include name="${ant.project.name}/tools/"/>
+			</tarfileset>
+		</tar>
+		<bzip2 
+			destfile="${dir.dist}/${ant.project.name}_all_${DSTAMP}.tar.bz2"
+			src="${dir.dist}/${ant.project.name}_all_${DSTAMP}.tar">
+		</bzip2>
+		<delete file="${dir.dist}/${ant.project.name}_all_${DSTAMP}.tar">
+		</delete>
+		<copy 
+			file="${dir.dist}/${ant.project.name}_all_${DSTAMP}.tar.bz2"
+			todir="/mnt/Save"
+			overwrite="true">
+		</copy>
+	</target>
+
+</project>
