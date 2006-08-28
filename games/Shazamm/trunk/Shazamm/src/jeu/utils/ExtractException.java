@@ -6,7 +6,16 @@ package jeu.utils;
  * @author dutech
  */
 public class ExtractException extends Exception {
-    public ExtractException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1960264340113851537L;
+
+	/**
+	 * 
+	 */
+
+	public ExtractException() {
         super();
     }
    

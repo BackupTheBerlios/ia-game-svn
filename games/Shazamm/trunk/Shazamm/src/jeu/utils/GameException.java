@@ -12,7 +12,12 @@ package jeu.utils;
  * @author dutech
  */
 public class GameException extends Exception {
-    public GameException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7777379340329140827L;
+
+	public GameException() {
         super();
     }
    
