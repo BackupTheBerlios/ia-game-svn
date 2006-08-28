@@ -86,7 +86,6 @@ public class LarcinC extends Coup {
     public void apply(Jeu p_jeu, EtatJeu p_etat) 
     throws GameException
     {
-        ArrayList aDetruire = new ArrayList();
         
         Joueur zeJoueur = p_etat.getJoueur( coulJoueur );
         if( zeJoueur.etat == Constantes.DOIT_VOLER ) {
