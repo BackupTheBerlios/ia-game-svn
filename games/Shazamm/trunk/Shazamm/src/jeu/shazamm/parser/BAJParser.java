@@ -119,13 +119,13 @@ public class BAJParser implements BAJParserConstants {
     jj_consume_token(kwMise);
     miseT = jj_consume_token(idMise);
        miseStr =  miseT.image.toString();
-       miseStr = miseStr.substring( 1, miseStr.length()-1 ).trim();
-       mise1 = Integer.parseInt( miseStr);
+       miseStr = miseStr.substring( 1, miseStr.length()-1 );
+       mise1 = Integer.parseInt( miseStr.trim());
        System.out.println( joueur1 + " -> " + mise1 + " pts"  );
     miseT = jj_consume_token(idMise);
        miseStr =  miseT.image.toString();
-       miseStr = miseStr.substring( 1, miseStr.length()-1 ).trim();
-       mise2 = Integer.parseInt( miseStr);
+       miseStr = miseStr.substring( 1, miseStr.length()-1 );
+       mise2 = Integer.parseInt( miseStr.trim());
        System.out.println( joueur2 + " -> " + mise2 + " pts"  );
     jj_consume_token(END_TR);
     jj_consume_token(kwSorts);
@@ -141,7 +141,7 @@ public class BAJParser implements BAJParserConstants {
       }
       sortT = jj_consume_token(idSort);
          sortStr = sortT.image.toString();
-         int numSort = Integer.parseInt( sortStr.substring(0,2) );
+         int numSort = Integer.parseInt( sortStr.substring(0,2).trim() );
          int numJoueur = (sortStr.charAt(2) == 'r' ? 1 : 2);
          System.out.println( "Joueur"+numJoueur+" : sort_"+numSort );
 
@@ -179,7 +179,7 @@ public class BAJParser implements BAJParserConstants {
         sortCStr = sortC.image.toString();
         // cherche si un sort est cloné
         if( sortCStr.length() > 5 ) {
-          int numSort = Integer.parseInt( sortCStr.substring(3, sortCStr.indexOf("-")-1));
+          int numSort = Integer.parseInt( sortCStr.substring(3, sortCStr.indexOf("-")-1).trim());
           System.out.println( "Le sort -"+numSort+"- est clon\u00e9 par "+numCloneur );
           if( numSort == 3 ) numVoleur = numCloneur;
           if( numSort == 6 ) numRecycleur = numCloneur;
@@ -233,8 +233,15 @@ public class BAJParser implements BAJParserConstants {
           jj_consume_token(kwDestruction);
           sortT = jj_consume_token(idVol);
           sortVStr = sortT.image.toString();
-          int numDest = Integer.parseInt( sortVStr.substring(0, sortVStr.length()-1  ));
-          System.out.println( "Le sort -"+numDest+"- est d\u00e9truit");
+          System.out.println( "lu pour num dest = |"+sortVStr+"|");
+          String[] listDest = sortVStr.split("([,< ])+");
+          for( int nbVol = 0; nbVol < listDest.length; nbVol++ ) {
+            if( !listDest[nbVol].equals("") ) {
+              //int numDest = Integer.parseInt( sortVStr.substring(0, sortVStr.length()-1  ).trim());
+              int numDest = Integer.parseInt( listDest[nbVol] );
+              System.out.println( "Le sort -"+numDest+"- est d\u00e9truit");
+            }
+          }
           break;
         case kwVol:
         case kwmVol:
@@ -250,20 +257,29 @@ public class BAJParser implements BAJParserConstants {
             jj_consume_token(-1);
             throw new ParseException();
           }
-          sortT = jj_consume_token(idVol);
+          //(<kwVol>
+                sortT = jj_consume_token(idVol);
           sortVStr = sortT.image.toString();
-          int numVol = Integer.parseInt(  sortVStr.substring(0, sortVStr.length()-1  ));
-          System.out.println( "Le sort -"+numVol+"- est vol\u00e9 par "+numVoleur);
-          if (numVol == 6) {
-            // il faut changer le numRecycleur
-            numRecycleur = numVoleur;
-          }
-          if (numVoleur == 1) {
-             sorts1.add( new Integer( numVol ));
-          }
-          else {
-             sorts2.add( new Integer( numVol ));
-          }
+          System.out.println( "lu pour num vol = |"+sortVStr+"|");
+          String[] listVol = sortVStr.split("([,< ])+");
+          for( int nbVol = 0; nbVol < listVol.length; nbVol++ ) {
+             System.out.println("strvol =|"+listVol[nbVol]+"|");
+             //int numVol = Integer.parseInt(  sortVStr.substring(0, sortVStr.length()-1  ).trim());
+             if( !listVol[nbVol].equals("") ) {
+               int numVol = Integer.parseInt( listVol[nbVol] );
+                   System.out.println( "Le sort -"+numVol+"- est vol\u00e9 par "+numVoleur);
+                   if (numVol == 6) {
+                  // il faut changer le numRecycleur
+                  numRecycleur = numVoleur;
+               }
+               if (numVoleur == 1) {
+                  sorts1.add( new Integer( numVol ));
+               }
+               else {
+                  sorts2.add( new Integer( numVol ));
+                   }
+                 }
+              }
           break;
         default:
           jj_la1[6] = jj_gen;
@@ -294,7 +310,7 @@ public class BAJParser implements BAJParserConstants {
       jj_consume_token(kwRecyclage);
       recT = jj_consume_token(idRec);
         recTStr = recT.image.toString();
-        nbRec= Integer.parseInt( recTStr.substring(0, recTStr.indexOf("p")-1));
+        nbRec= Integer.parseInt( recTStr.substring(0, recTStr.indexOf("p")-1).trim() );
         System.out.println( "Recyclage de "+nbRec+" pts par "+numRecycleur );
       jj_consume_token(END_TR);
      if (numRecycleur == 1) {

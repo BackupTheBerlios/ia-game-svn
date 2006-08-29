@@ -6,6 +6,8 @@
  */
 package jeu.shazamm.cartes;
 
+import java.util.ListIterator;
+
 import jeu.shazamm.core.Carte;
 import jeu.shazamm.core.EtatJeu;
 import jeu.shazamm.core.Constantes;
@@ -33,8 +35,17 @@ public class Larcin extends Carte {
     public boolean effet(EtatJeu etat)
     {	
         
-        if( (etat.getOtherJoueur(beneficiaire).cartesMisees.isEmpty()) ||
-            (etat.cartesJouees.isEmpty())   ) {
+        // L'autre a joué des cartes qui doivent faire effet ?
+        boolean isAbleLarcin = false;
+        int otherCoul = etat. getOtherJoueur(beneficiaire).coul;
+        for (ListIterator itCarte = etat.cartesJouees.listIterator(); itCarte.hasNext();) {
+            Carte currCarte = (Carte) itCarte.next();
+            if( currCarte.beneficiaire == otherCoul ) {
+                isAbleLarcin = true;
+                break;
+            }
+        }
+        if( isAbleLarcin == false ) {
             // il ne se passe rien
             System.out.println( "Larcin sans effet!"); // DEBUG
             return true;

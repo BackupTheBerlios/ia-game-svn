@@ -82,7 +82,7 @@ public class Jeu {
      * On essaye d'appliquer, dans l'ordre des prioritées, les Cartes qui ont
      * été jouées par les Joueurs.
      * @param etat
-     * @return false si les cartes empâchent de finaliser la résolution de la mise.
+     * @return false si les cartes empêchent de finaliser la résolution de la mise.
      * Souvent, il faut alors un nouveau type de Coup.
      */
     public boolean applyCartes(EtatJeu etat)

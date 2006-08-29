@@ -23,6 +23,7 @@ import jeu.shazamm.core.CoupFactory;
 import jeu.shazamm.core.EtatJeu;
 import jeu.shazamm.core.HistoriqueCoup;
 import jeu.shazamm.core.Jeu;
+import jeu.shazamm.parser.ParseException;
 import jeu.utils.GameException;
 
 /**
@@ -138,6 +139,7 @@ public class TestShazamm {
                             currentEtat = zeJeu.apply( currentEtat, element);
                             System.out.println( currentEtat.toString());
                             zePartie.add( currentEtat );
+                           
                         }
                     }
                     
@@ -225,17 +227,32 @@ public class TestShazamm {
                         for( int i=0; i<nbPartie; i++ ) {
                             indexPartie = numPartie+i;
                             numPartieStr = df.format( indexPartie );
-                            loadBAJGame( indexPartie );
-                            if( checkGame( false ) == true ) {
-                                String nomR = toLinuxName( zeCoups.nomJoueurRouge );
-                                String nomV = toLinuxName( zeCoups.nomJoueurVert );
-                                nomPartieStr = new String( nomRep+"/game_"+numPartieStr+"_"+nomR+"_vs_"+nomV+".sha");
-                                zeCoups.writeToASCIFile( nomPartieStr );
-                                System.out.println("Sauve ... "+nomPartieStr);
+                            try {
+                                loadBAJGame( indexPartie );
+                            
+                                if( checkGame( false ) == true ) {
+                                    try {
+                                        String nomR = toLinuxName( zeCoups.nomJoueurRouge );
+                                        String nomV = toLinuxName( zeCoups.nomJoueurVert );
+                                        nomPartieStr = new String( nomRep+"/game_"+numPartieStr+"_"+nomR+"_vs_"+nomV+".sha");
+                                        zeCoups.writeToASCIFile( nomPartieStr );
+                                        System.out.println("Sauve ... "+nomPartieStr);
+                                    }
+                                    catch( Exception e) {
+                                        System.out.println( "Partie "+indexPartie+" impossible à charger !!");
+                                        myLogWriter.write( "Partie "+indexPartie+" impossible à charger !!");
+                                        myLogWriter.newLine();
+                                    }
+                                }
+                                else {
+                                    System.out.println( "Partie "+indexPartie+" impossible à interpréter !!");
+                                    myLogWriter.write( "Partie "+indexPartie+" impossible à interpréter !!");
+                                    myLogWriter.newLine();
+                                }
                             }
-                            else {
-                                System.out.println( "Partie "+indexPartie+" impossible à interpréter !!");
-                                myLogWriter.write( "Partie "+indexPartie+" impossible à interpréter !!");
+                            catch( ParseException pe) {
+                                System.out.println( "Partie "+indexPartie+" => ParseException : "+pe.getMessage());
+                                myLogWriter.write( "Partie "+indexPartie+" => ParseException : "+pe.getMessage());
                                 myLogWriter.newLine();
                             }
                         }
@@ -333,6 +350,7 @@ public class TestShazamm {
                 currentEtat = zeJeu.apply( currentEtat, element);
                 if( verb ) System.out.println( currentEtat.toString());
                 zePartie.add( currentEtat );
+             
             }
         }
         catch( GameException ge) {
@@ -357,6 +375,7 @@ public class TestShazamm {
         result = result.replace( "ô", "o");
         result = result.replace( "ù", "u");
         result = result.replace( "û", "u");
+        result = result.replace( "ë", "e");
         return result;
     }
     /**

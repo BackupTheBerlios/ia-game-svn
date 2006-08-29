@@ -295,6 +295,7 @@ public class EtatJeu {
             zeJoueurs[i].prepareForNewManche( nbPoints, nbPioche);
         }
     }
+
     /**
      * Classique.
      */
@@ -324,8 +325,7 @@ public class EtatJeu {
         if( autoriseSort == false ) {
             strbuf.append( ">>> Les sorts sont interdits <<<\n");
         }
-        
-        
+  
         strbuf.append( "---- cartesJouées ----\n");
         //strbuf.append( cartesJouees.entrySet().toString() );
         for (Iterator itCarte = cartesJouees.iterator(); itCarte.hasNext();) {

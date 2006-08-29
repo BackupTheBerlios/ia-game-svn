@@ -143,13 +143,13 @@ TOKEN :
 {
   <idMise : ">" (" ")* (["0"-"9"])+ "<" >
 |
-  <idJoueur : ">" ["a"-"z","A"-"Z","_","é","è","ê","â","ô","ù","û"] ( ["a"-"z","A"-"Z","_"," ","0"-"9","é","è","ê","â","ô","ù","û"] )* "<" >
+  <idJoueur : ">" ["a"-"z","A"-"Z","_","-","é","è","ê","â","ô","ù","û","ë"] ( ["a"-"z","A"-"Z","_","-"," ","0"-"9","é","è","ê","â","ô","ù","û","ë"] )* "<" >
 |
   <idSort : ["0"-"9"] ["0"-"9"] ["r","v"]>
 |
   <idClone : "de " (["0"-"9"])* " -">
 |
-  <idVol : (["0"-"9"])+ "<" >
+  <idVol : (["0"-"9"])+ (", " (["0"-"9"])+)* "<" >
 |
   <idRec : (["-","0"-"9"])+ " pts" >
 |
@@ -255,14 +255,14 @@ void getMise() :
     {
        miseStr =  miseT.image.toString();
        miseStr = miseStr.substring( 1, miseStr.length()-1 );
-       mise1 = Integer.parseInt( miseStr);
+       mise1 = Integer.parseInt( miseStr.trim());
        System.out.println( joueur1 + " -> " + mise1 + " pts"  );
     }
   miseT=<idMise>
     {
        miseStr =  miseT.image.toString();
        miseStr = miseStr.substring( 1, miseStr.length()-1 );
-       mise2 = Integer.parseInt( miseStr);
+       mise2 = Integer.parseInt( miseStr.trim());
        System.out.println( joueur2 + " -> " + mise2 + " pts"  );
     }
   <END_TR>
@@ -271,7 +271,7 @@ void getMise() :
     sortT=<idSort>
       {
          sortStr = sortT.image.toString();
-	 int numSort = Integer.parseInt( sortStr.substring(0,2) );
+	 int numSort = Integer.parseInt( sortStr.substring(0,2).trim() );
          int numJoueur = (sortStr.charAt(2) == 'r' ? 1 : 2);
          System.out.println( "Joueur"+numJoueur+" : sort_"+numSort );
 
@@ -314,7 +314,7 @@ void getMise() :
 	sortCStr = sortC.image.toString();
         // cherche si un sort est cloné
         if( sortCStr.length() > 5 ) {
-          int numSort = Integer.parseInt( sortCStr.substring(3, sortCStr.indexOf("-")-1));
+          int numSort = Integer.parseInt( sortCStr.substring(3, sortCStr.indexOf("-")-1).trim());
 	  System.out.println( "Le sort -"+numSort+"- est cloné par "+numCloneur );
 	  if( numSort == 3 ) numVoleur = numCloneur;
 	  if( numSort == 6 ) numRecycleur = numCloneur;
@@ -352,27 +352,43 @@ void getMise() :
       sortT=<idVol>
         {
 	  sortVStr = sortT.image.toString();
-          int numDest = Integer.parseInt( sortVStr.substring(0, sortVStr.length()-1  ));
-          System.out.println( "Le sort -"+numDest+"- est détruit");
+	  System.out.println( "lu pour num dest = |"+sortVStr+"|");
+          String[] listDest = sortVStr.split("([,< ])+");
+          for( int nbVol = 0; nbVol < listDest.length; nbVol++ ) {
+            if( !listDest[nbVol].equals("") ) {
+              //int numDest = Integer.parseInt( sortVStr.substring(0, sortVStr.length()-1  ).trim());
+              int numDest = Integer.parseInt( listDest[nbVol] );
+              System.out.println( "Le sort -"+numDest+"- est détruit");
+            }
+          }
         }
    )
    |
    ((<kwVol>|<kwmVol>)
+   //(<kwVol>
       sortT=<idVol>
         {
           sortVStr = sortT.image.toString();
-          int numVol = Integer.parseInt(  sortVStr.substring(0, sortVStr.length()-1  ));
-          System.out.println( "Le sort -"+numVol+"- est volé par "+numVoleur);
-	  if (numVol == 6) {
-            // il faut changer le numRecycleur
-            numRecycleur = numVoleur;
-          }
-          if (numVoleur == 1) {
-             sorts1.add( new Integer( numVol ));
-          }
-          else {
-             sorts2.add( new Integer( numVol ));
-	  }
+          System.out.println( "lu pour num vol = |"+sortVStr+"|");
+          String[] listVol = sortVStr.split("([,< ])+");
+          for( int nbVol = 0; nbVol < listVol.length; nbVol++ ) {
+             System.out.println("strvol =|"+listVol[nbVol]+"|");          	
+             //int numVol = Integer.parseInt(  sortVStr.substring(0, sortVStr.length()-1  ).trim());
+             if( !listVol[nbVol].equals("") ) {
+               int numVol = Integer.parseInt( listVol[nbVol] );
+          	   System.out.println( "Le sort -"+numVol+"- est volé par "+numVoleur);
+	           if (numVol == 6) {
+                  // il faut changer le numRecycleur
+                  numRecycleur = numVoleur;
+               }
+               if (numVoleur == 1) {
+                  sorts1.add( new Integer( numVol ));
+               }
+               else {
+                  sorts2.add( new Integer( numVol ));
+	           }
+	         }
+	      }
         }
    )
   )*
@@ -410,7 +426,7 @@ void getMise() :
     recT=<idRec>
       {
 	recTStr = recT.image.toString();
-        nbRec= Integer.parseInt( recTStr.substring(0, recTStr.indexOf("p")-1));
+        nbRec= Integer.parseInt( recTStr.substring(0, recTStr.indexOf("p")-1).trim() );
 	System.out.println( "Recyclage de "+nbRec+" pts par "+numRecycleur );
       }
    <END_TR>

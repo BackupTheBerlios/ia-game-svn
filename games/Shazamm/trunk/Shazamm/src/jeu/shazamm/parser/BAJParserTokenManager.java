@@ -695,13 +695,13 @@ private final void jjCheckNAddStates(int start)
    jjCheckNAdd(jjnextStates[start + 1]);
 }
 static final long[] jjbitVec0 = {
-   0x0L, 0x0L, 0x0L, 0xa10070400000000L
+   0x0L, 0x0L, 0x0L, 0xa100f0400000000L
 };
 private final int jjMoveNfa_1(int startState, int curPos)
 {
    int[] nextStates;
    int startsAt = 0;
-   jjnewStateCnt = 23;
+   jjnewStateCnt = 26;
    int i = 1;
    jjstateSet[0] = startState;
    int j, kind = 0x7fffffff;
@@ -722,7 +722,7 @@ private final int jjMoveNfa_1(int startState, int curPos)
                   else if (curChar == 62)
                      jjCheckNAddStates(0, 2);
                   if ((0x3ff000000000000L & l) != 0L)
-                     jjCheckNAddStates(3, 5);
+                     jjCheckNAddStates(3, 6);
                   break;
                case 0:
                   if (curChar == 32)
@@ -764,9 +764,13 @@ private final int jjMoveNfa_1(int startState, int curPos)
                   if (curChar == 60 && kind > 19)
                      kind = 19;
                   break;
+               case 15:
+                  if (curChar == 45)
+                     jjCheckNAddTwoStates(16, 17);
+                  break;
                case 16:
-                  if ((0x3ff000100000000L & l) != 0L)
-                     jjAddStates(6, 7);
+                  if ((0x3ff200100000000L & l) != 0L)
+                     jjCheckNAddTwoStates(16, 17);
                   break;
                case 17:
                   if (curChar == 60 && kind > 20)
@@ -774,7 +778,7 @@ private final int jjMoveNfa_1(int startState, int curPos)
                   break;
                case 18:
                   if ((0x3ff000000000000L & l) != 0L)
-                     jjCheckNAddStates(3, 5);
+                     jjCheckNAddStates(3, 6);
                   break;
                case 19:
                   if ((0x3ff000000000000L & l) != 0L)
@@ -782,9 +786,21 @@ private final int jjMoveNfa_1(int startState, int curPos)
                   break;
                case 21:
                   if ((0x3ff000000000000L & l) != 0L)
-                     jjCheckNAddTwoStates(21, 22);
+                     jjCheckNAddStates(7, 9);
                   break;
                case 22:
+                  if (curChar == 32)
+                     jjCheckNAdd(23);
+                  break;
+               case 23:
+                  if ((0x3ff000000000000L & l) != 0L)
+                     jjCheckNAddStates(10, 12);
+                  break;
+               case 24:
+                  if (curChar == 44)
+                     jjstateSet[jjnewStateCnt++] = 22;
+                  break;
+               case 25:
                   if (curChar == 60 && kind > 23)
                      kind = 23;
                   break;
@@ -856,7 +872,7 @@ private final int jjMoveNfa_1(int startState, int curPos)
          kind = 0x7fffffff;
       }
       ++curPos;
-      if ((i = jjnewStateCnt) == (startsAt = 23 - (jjnewStateCnt = startsAt)))
+      if ((i = jjnewStateCnt) == (startsAt = 26 - (jjnewStateCnt = startsAt)))
          return curPos;
       try { curChar = input_stream.readChar(); }
       catch(java.io.IOException e) { return curPos; }
@@ -955,7 +971,7 @@ private final int jjMoveNfa_2(int startState, int curPos)
    }
 }
 static final int[] jjnextStates = {
-   12, 13, 15, 19, 21, 22, 16, 17, 
+   12, 13, 15, 19, 21, 24, 25, 21, 24, 25, 24, 23, 25, 
 };
 public static final String[] jjstrLiteralImages = {
 "", null, null, null, null, "\115\101\116\103\110\105\40\116", 
@@ -981,8 +997,8 @@ static final long[] jjtoSkip = {
    0x8060010L, 
 };
 protected SimpleCharStream input_stream;
-private final int[] jjrounds = new int[23];
-private final int[] jjstateSet = new int[46];
+private final int[] jjrounds = new int[26];
+private final int[] jjstateSet = new int[52];
 protected char curChar;
 public BAJParserTokenManager(SimpleCharStream stream)
 {
@@ -1006,7 +1022,7 @@ private final void ReInitRounds()
 {
    int i;
    jjround = 0x80000001;
-   for (i = 23; i-- > 0;)
+   for (i = 26; i-- > 0;)
       jjrounds[i] = 0x80000000;
 }
 public void ReInit(SimpleCharStream stream, int lexState)

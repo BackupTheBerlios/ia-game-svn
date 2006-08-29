@@ -73,6 +73,13 @@ public class RecyclageC extends Coup {
     {
         Joueur zeJoueur = p_etat.getJoueur( coulJoueur );
         if( zeJoueur.etat == Constantes.DOIT_RECYCLER ) {
+            // on ne peut dépenser trop ou pas assez!
+            if( zeJoueur.mana.manaBet+modif < 1 ) {
+                modif = 1 - zeJoueur.mana.manaBet; 
+            }
+            else if (zeJoueur.mana.manaBet+modif > zeJoueur.mana.manaBefore) {
+                modif = zeJoueur.mana.manaBefore - zeJoueur.mana.manaBet;
+            }
             zeJoueur.mana.manaBet += modif;
             zeJoueur.mana.strikeForce += modif;
             zeJoueur.mana.manaSpent += modif;
@@ -80,6 +87,12 @@ public class RecyclageC extends Coup {
             // change le statut du joueur
             zeJoueur.etat = Constantes.DOIT_ATTENDRE;
             
+        }
+        else if( (zeJoueur.etat == Constantes.DOIT_MISER ) ||
+                 (zeJoueur.etat == Constantes.PERDU) ||
+                 (zeJoueur.etat == Constantes.GAGNE) ){
+            // on vient de jouer un FDM !!!
+            // on ne fait rien
         }
         else {
             throw new GameException( Constantes.strCoul(zeJoueur.coul)+" ne peut recycler!");
