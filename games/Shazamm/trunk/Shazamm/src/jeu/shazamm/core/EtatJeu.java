@@ -172,24 +172,28 @@ public class EtatJeu {
                 //currCarte is bigger
                 p_carte.beneficiaire = p_benef.coul;
                 cartesJouees.add( index, p_carte );
+                //DEBUG System.out.println("EtatJeu.addCarteCheck " + p_carte.toString()+ " : acceptée car plus petite que "+currCarte.toString());
                 return true;
             }
             else if( currCarte.compareTo(p_carte) == 0) {
                 if( currCarte.beneficiaire != p_benef.coul) {
                     // déjà jouée par l'autre
                     cartesJouees.remove(index);
+//                  DEBUG System.out.println("EtatJeu.addCarteCheck " + p_carte.toString()+ " : refusée car déjà jouée");
                     return false;
                 }
                 else {
-                    p_carte.beneficiaire = p_benef.coul;
-                    cartesJouees.add( index, p_carte );
-                    return true;
+                    //p_carte.beneficiaire = p_benef.coul;
+                    cartesJouees.remove( index );
+//                  DEBUG System.out.println("EtatJeu.addCarteCheck " + p_carte.toString()+ " : refusée car déjà jouée par même joueur (BIZARRE)" + currCarte.toString());
+                    return false;
                 }
             }
             index++;
         }
         p_carte.beneficiaire = p_benef.coul;
         cartesJouees.add(p_carte);
+//      DEBUG System.out.println("EtatJeu.addCarteCheck " + p_carte.toString()+ " : acceptée par dépit");
         return true;
     }
     /**
