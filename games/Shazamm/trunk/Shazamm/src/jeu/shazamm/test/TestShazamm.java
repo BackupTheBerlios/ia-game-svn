@@ -376,6 +376,7 @@ public class TestShazamm {
         result = result.replace( "ù", "u");
         result = result.replace( "û", "u");
         result = result.replace( "ë", "e");
+        result = result.replace( "@", "a");
         return result;
     }
     /**

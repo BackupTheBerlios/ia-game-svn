@@ -268,6 +268,10 @@ public class BAJParser implements BAJParserConstants {
              if( !listVol[nbVol].equals("") ) {
                int numVol = Integer.parseInt( listVol[nbVol] );
                    System.out.println( "Le sort -"+numVol+"- est vol\u00e9 par "+numVoleur);
+                   //if (numVol == 2) {
+                      // il faut changer le numéro du cloneur
+                   //   numCloneur = numVoleur;
+                   //}
                    if (numVol == 6) {
                   // il faut changer le numRecycleur
                   numRecycleur = numVoleur;

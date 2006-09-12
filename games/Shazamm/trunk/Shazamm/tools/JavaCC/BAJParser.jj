@@ -141,9 +141,9 @@ SKIP :
 <MISE>
 TOKEN :
 {
-  <idMise : ">" (" ")* (["0"-"9"])+ "<" >
+  <idMise : ">" (" ")* (["0"-"9"])+ (" ")* "<" >
 |
-  <idJoueur : ">" ["a"-"z","A"-"Z","_","-","é","è","ê","â","ô","ù","û","ë"] ( ["a"-"z","A"-"Z","_","-"," ","0"-"9","é","è","ê","â","ô","ù","û","ë"] )* "<" >
+  <idJoueur : ">" ["a"-"z","A"-"Z","_","-","é","è","ê","â","ô","ù","û","ë","@","."] ( ["a"-"z","A"-"Z","_","-"," ","0"-"9","é","è","ê","â","ô","ù","û","ë","@","."] )* "<" >
 |
   <idSort : ["0"-"9"] ["0"-"9"] ["r","v"]>
 |
@@ -377,6 +377,10 @@ void getMise() :
              if( !listVol[nbVol].equals("") ) {
                int numVol = Integer.parseInt( listVol[nbVol] );
           	   System.out.println( "Le sort -"+numVol+"- est volé par "+numVoleur);
+          	   //if (numVol == 2) {
+          	      // il faut changer le numéro du cloneur
+          	   //   numCloneur = numVoleur;
+          	   //}
 	           if (numVol == 6) {
                   // il faut changer le numRecycleur
                   numRecycleur = numVoleur;
