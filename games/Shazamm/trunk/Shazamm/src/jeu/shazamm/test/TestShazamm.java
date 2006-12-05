@@ -390,7 +390,7 @@ public class TestShazamm {
         CoupFactory coupReader = new CoupFactory();
         EtatJeu avant, apres;
         Coup zeCoup;
-        byte buffer[] = new byte[100];
+        //byte buffer[] = new byte[100];
         BufferedReader reader = new BufferedReader( new InputStreamReader(System.in));
         String read = "";
         // initialise le jeu
