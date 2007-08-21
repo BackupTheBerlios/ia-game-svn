@@ -1,5 +1,0 @@
-
-- Récupérer des éléments de DDZ et/ou Shazam
-- Modele du jeu
-- Interface
-- Actions
