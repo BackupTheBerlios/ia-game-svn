@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Built file pour le projet-->
+<project name="DrolesDeZebres" default="dist" basedir=".">
+	<!-- Les répertoires utilisés -->
+	<property name="dir.dist" value="dist"></property>
+	<property name="dir.src" value="src"></property>
+	<property name="dir.doc" value="doc"></property>
+	<property name="dir.share" value="share"></property>
+	<property name="dir.bin" value="bin"></property>
+	<property name="dir.publish" value="/home/dutech/Loria/HTML/WWW/DDZ"></property>
+	
+	<!-- Des groupes de fichiers -->
+	<fileset id="files-src" dir=".">
+		<include name="${dir.src}/"></include>
+	</fileset>
+	<fileset id="files-doc" dir=".">
+		<include name="${dir.doc}/README"></include>
+	</fileset>
+	<fileset id="files-base" dir=".">
+		<include name="build.xml"></include>
+		<include name="run.sh"></include>
+	</fileset>
+	<fileset id="files-share" dir=".">
+		<include name="${dir.share}/exPartie.mvt"></include>
+	</fileset>
+	<fileset id="files-bin" dir="${dir.bin}">
+	</fileset>
+	
+	<!-- Prépare une distribution publique -->
+	<target name="dist" depends="jar-sources, tar-sources">
+	</target>
+	<target name="publish-loria" depends="dist">
+		<copy todir="${dir.publish}" verbose="true">
+			<fileset dir="${dir.dist}">
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- Distribution Sources -->
+	<target name="tar-sources">
+		<tar destfile="${dir.dist}/${ant.project.name}_src.tar">
+			<tarfileset dir=".">
+				<include name="${dir.src}/"></include>
+				<include name="${dir.doc}/README"></include>
+				<include name="build.xml"></include>
+				<include name="${dir.share}/exPartie.mvt"></include>
+				<include name="run.sh"></include>
+			</tarfileset>
+		</tar>
+		<gzip zipfile="${dir.dist}/${ant.project.name}_src.tar.gz" src="${dir.dist}/${ant.project.name}_src.tar">
+		</gzip>
+		<delete file="${dir.dist}/${ant.project.name}_src.tar"></delete>
+	</target>
+	<target name="jar-sources">
+		<jar destfile="${dir.dist}/${ant.project.name}_src.jar">
+			<fileset refid="files-src"></fileset>
+			<fileset refid="files-doc"></fileset>
+			<fileset refid="files-base"></fileset>
+			<fileset refid="files-share"></fileset>
+		</jar>
+	</target>
+	
+	<!-- Distribution Classes (généré par Eclipse) -->
+	<target name="jar-bin">
+		<tstamp/>
+		<jar destfile="${dir.dist}/${ant.project.name}_bin_${DSTAMP}.jar">
+			<fileset refid="files-bin">
+			</fileset>
+			<manifest>
+				<attribute name="Main-Class" value="AutoZebre"/>
+			</manifest>
+		</jar>
+    </target>
+</project> 

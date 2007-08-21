@@ -1,0 +1,66 @@
+
+Bonjour :D
+Pour toute question, ne pas hésiter à me contacter : <Alain.Dutech AT loria.fr>
+
+Voici une version en perpétuelle évolution d'un programme qui a pour but
+de jouer tout seul à "Droles de Zèbres".
+
+---------------------------------------------------------------
+Codage des mouvements. (voir example dans share/exPartie.mvt)
+----------------------
+v:G(3, 5)I+2 signifie que v(vert) a joué une G(gazelle) à la 3eme ligne,
+5eme colonne (0n commence à 0 dans les deux cas) et a avancé I(Indiana)
+de 2.
+v:C(0, 0)s(1, 0)s(1, 1)I+1 : vert pose un croco en (0, 0) et échange de 
+position avec la gazelle en (1, 0).
+Les animaux possible sont : -(pas de pose),Z, G, L, E, C. 
+---------------------------------------------------------------
+
+---------------------------------------------------------------
+Il a pour l'instant plusieurs executables qui marchent.
+-------------------------------------------------------
+1) AutoZebre [{-v,--verbose}] [--param] [fileName.mvt]
+  Le plus abouti mais graphique. Ouvre, Sauvegarde des parties et essaie de chercher
+la série des meilleurs coups.
+Touches: 
+  haut, bas : naviguer dans la partie
+  insert : ajoute un coup vierge après le coup actuel
+  
+ATTENTION : pour l'instant, la recherche se fait par 'alpha-beta' et
+descend à une profondeur max de 50 (ce qui est beaucoup trop) ou jusqu'à
+trouver une position finale. Du coup, a moins d'être à moins de 10-12 coups 
+de la fin, ma machine à moi affiche "memory full" où un truc équivalent.
+
+-------
+2) testDrolesZebres/TestAlphaBeta fileName nbEssaiMax
+  Teste explicitement l'alpha-beta en commençant par un coup avant la
+fin jusqu'à 'nbEssaiMax' avant la fin.
+
+-------
+3) testDrolesZebres/TestJeu
+  Teste plusieurs méthodes...
+OBSOLETE (??)
+---------------------------------------------------------------
+
+---------------------------------------------------------------
+hiérarchie des fichiers
+-----------------------
+src/
+ + drolesDZ/ (le coeur du jeu)
+ + gui/ (utilise SWT)
+ + testDrolesZebres/ (quelques "anciens" programmes de test)
+ Autozebre.java
+ Parameters.java
+ 
+doc/
+ README
+
+share/
+ exPartie.mvt (une partie de test)
+ 
+lib/ (les librairies utilisées)
+
+bin/ (les fichiers .classe)
+
+dist/ (les archives à distribuer)
+---------------------------------------------------------------
