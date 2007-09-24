@@ -11,6 +11,7 @@ import javax.vecmath.*;
 
 import java.util.ArrayList;
 
+// ajout débile
 
 public class ColouredTiles3D extends Shape3D 
 {
