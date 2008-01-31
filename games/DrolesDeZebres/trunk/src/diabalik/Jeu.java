@@ -44,6 +44,7 @@ public class Jeu {
 		setJoueur( Joueur.rouge,  zeJoueurFactory.create( Joueur.rouge ));
 		
 		initPlateau();
+		setFirstJoueur(Joueur.rouge);
 	}
 	public Jeu( Jeu zeJeu )
 	{
@@ -63,12 +64,12 @@ public class Jeu {
 		Plateau board = getPlateau();
 		for(int col = 0; col < 7; col ++) {
 			if( col != 3) {
-				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur );
-				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur );
+				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur );
+				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur );
 			}
 			else {
-				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur );
-				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur );
+				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur );
+				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur );
 			}
 		}
 	}
@@ -284,16 +285,32 @@ public class Jeu {
 	        
 	        // deplacer ?
 	        if( mvt.zeType == Mouvement.depl ) {
-	        	if( !deplacer(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin)) {
+	        	try {
+	        		deplacer(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        	}
+	        	catch( MoveException me ) {
+	        		System.err.println("DEPLACER : " + me.getMessage());
 	        		throw new GameException( "Déplacement irrégulier : " + mvt.toString());
 	        	}
+	        	zeEtat.nbMvtLeft--;
 	        }
 	        if( mvt.zeType == Mouvement.pass ) {
-	        	if( !fairePasse(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin)) {
+	        	try {
+	        		fairePasse(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        	}
+	        	catch( MoveException me ) {
+	        		System.err.println("PASSER : " + me.getMessage());
 	        		throw new GameException( "Passe irrégulière : " + mvt.toString());
 	        	}
+	        	zeEtat.nbMvtLeft--;
 	        }
-	        nextJoueur();
+	        if( mvt.zeType == Mouvement.none ) {
+	        	zeEtat.nbMvtLeft = 0;
+	        }
+	        if( zeEtat.nbMvtLeft == 0 ) {
+	        	zeEtat.nbMvtLeft = 3;
+	        	nextJoueur();
+	        }
 	    }
 	}
 	
@@ -315,19 +332,29 @@ public class Jeu {
 	 * @param origin
 	 * @param wish
 	 * @return
+	 * @throws MoveException 
 	 */
 	public boolean deplacer( int joueur, PositionGrid2D origin, PositionGrid2D wish)
+		throws MoveException
 	{
 		Joueur player = getJoueur(joueur);
 		
 		// il existe un pion coureur dans la case de départ
 		Piece pion = getPlateau().getCase(origin);
-		if( pion == null ) return false;
-		if( pion.m_joueur.sameColor(player) == false ) return false;
-		if( pion.type != Piece.coureur) return false;
+		if( pion == null ) {
+			throw new MoveException("Pas de pion à déplacer");
+		}
+		if( pion.m_joueur.sameColor(player) == false ) {
+			throw new MoveException("Pion pas de la bonne couleur");
+		}
+		if( pion.type != Piece.coureur) {
+			throw new MoveException("Le pion n'est pas un coureur");
+		}
 		
 		// case d'arrivée vide
-		if( getPlateau().isCaseEmpty(wish) == false ) return false;
+		if( getPlateau().isCaseEmpty(wish) == false ) {
+			throw new MoveException("Case d'arrivée déjà occupée");
+		}
 		
 		// bouge pièce
 		getPlateau().setCase(origin, null);
@@ -335,23 +362,38 @@ public class Jeu {
 		return true;
 	}
 	public boolean fairePasse( int joueur, PositionGrid2D origin, PositionGrid2D wish )
+		throws MoveException
 	{
 		Joueur player = getJoueur(joueur);
 		
 		// il existe un pion passeur dans la case de départ
 		Piece pionStart = getPlateau().getCase(origin);
-		if( pionStart == null ) return false;
-		if( pionStart.m_joueur.sameColor(player) == false ) return false;
-		if( pionStart.type != Piece.passeur) return false;
+		if( pionStart == null ) {
+			throw new MoveException("Pas de pion pour passer");
+		}
+		if( pionStart.m_joueur.sameColor(player) == false ) {
+			throw new MoveException("Pion de départ n'est pas de la bonne couleur");
+		}
+		if( pionStart.type != Piece.passeur) {
+			throw new MoveException("Le pion de départ n'est pas un passeur");
+		}
 		
 		// il existe un pion coureur dans la case d'arrivée
-		Piece pionEnd = getPlateau().getCase(origin);
-		if( pionEnd == null ) return false;
-		if( pionEnd.m_joueur.sameColor(player) == false ) return false;
-		if( pionEnd.type != Piece.coureur) return false;
+		Piece pionEnd = getPlateau().getCase(wish);
+		if( pionEnd == null ) {
+			throw new MoveException("Pas de pion pour réceptionner");
+		}
+		if( pionEnd.m_joueur.sameColor(player) == false ) {
+			throw new MoveException("Pion d'arrivée n'est pas de la bonne couleur");
+		}
+		if( pionEnd.type != Piece.coureur) {
+			throw new MoveException("Le pion d'arrivée n'est pas un coureur");
+		}
 		
-		pionStart.type = Piece.coureur;
-		pionEnd.type = Piece.passeur;
+		//pionStart.type = Piece.coureur;
+		getPlateau().setCase(origin, pionEnd);
+		//pionEnd.type = Piece.passeur;
+		getPlateau().setCase(wish, pionStart);
 		return true;
 	}
 	
