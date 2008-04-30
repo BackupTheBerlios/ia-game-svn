@@ -98,7 +98,7 @@ public class GenerateurMouvement {
 	                Jeu newJeu = new Jeu(zeJeu);
 	  
 	                // DEBUG *************************
-	                System.out.println( "potentialJeu : " + mvt.toString());
+	                //System.out.println( "potentialJeu : " + mvt.toString());
 	                // *******************************
 	                
 	                // le mouvement devrait s'appliquer
