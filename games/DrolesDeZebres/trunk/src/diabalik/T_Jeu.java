@@ -1,12 +1,13 @@
 package diabalik;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
+
+import game.GameException;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
-import drolesDZ.GameException;
 
 
 public class T_Jeu {
@@ -19,17 +20,22 @@ public class T_Jeu {
 	
 	@Test
 	public void testJeu() {
+		System.out.println("------------------ testJeu");
 		setUp();
 		System.out.println(game.displayStr());
+		System.out.println(">>>>> Historique");
+		System.out.println(game.getHistorique());
+		System.out.println("<<<<< Historique");
 	}
 
 	@Test
 	public void testApplyMovesString() {
+		System.out.println("------------------ testApplyMovesString");
 		setUp();
 		
 		try {
 			game.applyMoves("share/essai.dbk");
-			System.out.println( "Après lecture fichier\n"+game.displayStr() );
+			System.out.println( "AprÃ¨s lecture fichier\n"+game.displayStr() );
 			
 		} catch (GameException e) {
 			System.err.println("ApplyMoves : " + e.getMessage());
@@ -40,10 +46,15 @@ public class T_Jeu {
 			System.out.println( game.displayStr() );
 			fail("IOException");
 		}
+		System.out.println(">>>>> Historique");
+		System.out.println(game.getHistorique());
+		System.out.println("<<<<< Historique");
+		
 		
 	}
 	@Test
 	public void testApplyMove() {
+		System.out.println("------------------ testMove");
 		setUp();
 		
 		Mouvement mvt;
@@ -78,6 +89,9 @@ public class T_Jeu {
             fail();
 		}
 		System.out.println(game.displayStr());
+		System.out.println(">>>>> Historique");
+		System.out.println(game.getHistorique());
+		System.out.println("<<<<< Historique");
 	}
 
 }

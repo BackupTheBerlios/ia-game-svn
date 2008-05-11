@@ -6,6 +6,8 @@
  */
 package drolesDZ;
 
+import game.GameException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -26,9 +28,9 @@ public class AlphaBeta {
     }
     
     /**
-     * Cherche les meilleurs Mouvement avec une profondeur de recherche donnée.
-     * @param zeJoueur dont on cherche à optimiser les Mvts.
-     * @param zeJeu Jeu de départ
+     * Cherche les meilleurs Mouvement avec une profondeur de recherche donnï¿½e.
+     * @param zeJoueur dont on cherche ï¿½ optimiser les Mvts.
+     * @param zeJeu Jeu de dï¿½part
      * @param depthMax profondeur max
      * @throws GameException
      */
@@ -52,7 +54,7 @@ public class AlphaBeta {
         return lookForMaxMovesArray( zeJoueur, zeJeu, depthMax, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
     /**
-     * Cherche la valeur Max de l'état suivant.
+     * Cherche la valeur Max de l'ï¿½tat suivant.
      * @param zeJoueur
      * @param zeJeu jeu actuel
      * @param depth Profondeur de recherche voulue.
@@ -66,16 +68,16 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MAX["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             //addEvalues( zeJeu );
             //debug_System.out.println( "MAX["+depth+"]CutOff = "+zeJeu.getValue( zeJoueur ));
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MAX["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -100,16 +102,16 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MIN["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             //addEvalues( zeJeu );
             //debug_System.out.println( "MIN["+depth+"]CutOff = "+zeJeu.getValue( zeJoueur ));
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MIN["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -146,7 +148,7 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MAX["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             //addEvalues( zeJeu );
             zeJeu.getState().bestMoves.clear();
@@ -154,10 +156,10 @@ public class AlphaBeta {
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
         //ArrayList listeMvtPot = generateNextMoves( zeJeu );
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MAX["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -184,7 +186,7 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MIN["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             //addEvalues( zeJeu );
             //debug_System.out.println( "MIN["+depth+"]CutOff = "+zeJeu.getValue( zeJoueur ));
@@ -192,9 +194,9 @@ public class AlphaBeta {
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MIN["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -233,7 +235,7 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MAX["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             addEvalues( zeJeu );
             zeJeu.getState().bestMoves.clear();
@@ -241,9 +243,9 @@ public class AlphaBeta {
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MAX["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -269,7 +271,7 @@ public class AlphaBeta {
     {
         nbVisitedStates ++;
         //debug_System.out.println( "MIN["+depth+"]\n"+zeJeu.displayStr());
-        // Il est temps d'évaluer
+        // Il est temps d'ï¿½valuer
         if( timeToCut( zeJeu, depth )) {
             addEvalues( zeJeu );
             //debug_System.out.println( "MIN["+depth+"]CutOff = "+zeJeu.getValue( zeJoueur ));
@@ -277,9 +279,9 @@ public class AlphaBeta {
             return zeJeu.getValue( zeJoueur );
         }
         
-        // Génère les mvt potentiels
+        // Gï¿½nï¿½re les mvt potentiels
         ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
-        // cherche le meilleur à partir d'ici
+        // cherche le meilleur ï¿½ partir d'ici
         //debug_System.out.println( "MIN["+depth+"]"+listeMvtPot.size()+" mvt possibles");
         for (Iterator iter = listeMvtPot.iterator(); iter.hasNext();) {
             Jeu tmpJeu = (Jeu) iter.next();
@@ -302,7 +304,7 @@ public class AlphaBeta {
 
     
     /**
-     * Génère les mouvements possibles à partir d'une position.
+     * Gï¿½nï¿½re les mouvements possibles ï¿½ partir d'une position.
      * @param p_jeu actuel
      * @return ArrayList des Jeu suivants
      * @throws GameException
@@ -315,12 +317,12 @@ public class AlphaBeta {
     }
     
     /**
-     * Ajoute le Jeu à la liste des Jeu évalués (s'il ne l'était pas déjà).
+     * Ajoute le Jeu ï¿½ la liste des Jeu ï¿½valuï¿½s (s'il ne l'ï¿½tait pas dï¿½jï¿½).
      * @param p_jeu
      */
     public void addEvalues( Jeu p_jeu )
     {
-        // s'il n'est pas déjà évalué
+        // s'il n'est pas dï¿½jï¿½ ï¿½valuï¿½
 //        for( Iterator iJeuS = listeJeuEvalues.iterator(); iJeuS.hasNext();) {
 //            EtatJeu tmpJeuS = (EtatJeu) iJeuS.next();
 //            if( p_jeu.getState().equals( tmpJeuS )) {
@@ -332,19 +334,19 @@ public class AlphaBeta {
     public String displayEvalues() 
     {
         StringBuffer strbuf = new StringBuffer();
-        strbuf.append( "-----<Jeu à évaluer>-------\n");
+        strbuf.append( "-----<Jeu ï¿½ ï¿½valuer>-------\n");
 //        for (Iterator iterJeu = listeJeuEvalues.iterator(); iterJeu.hasNext();) {
 //            EtatJeu tmpJeu = (EtatJeu) iterJeu.next();
 //            strbuf.append( tmpJeu.toString());
 //        }
-        strbuf.append( "-----<end Jeu à évaluer>-----\n");
+        strbuf.append( "-----<end Jeu ï¿½ ï¿½valuer>-----\n");
         return strbuf.toString();
     }
     /**
-     * Arrête-t-on la recherche en profondeur?
+     * Arrï¿½te-t-on la recherche en profondeur?
      * @param zeJeu
-     * @param depth (profondeur à laquelle on veut descendre)
-     * @return true si on doit s'arrêter.
+     * @param depth (profondeur ï¿½ laquelle on veut descendre)
+     * @return true si on doit s'arrï¿½ter.
      */
     public boolean timeToCut( Jeu zeJeu, int depth )
     {

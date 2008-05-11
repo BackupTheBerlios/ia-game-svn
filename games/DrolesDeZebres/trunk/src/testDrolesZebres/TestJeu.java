@@ -6,6 +6,8 @@
  */
 package testDrolesZebres;
 
+import game.GameException;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -262,15 +264,15 @@ public class TestJeu {
 		
 		System.out.println( "rL32 =>" + myJeu.poserPiece( Joueur.rouge, Piece.lion, 3, 2));
 		myJeu.changeAroundLion( 3, 2 );
-		System.out.println( "Après avoir joué le lion...\n"+myJeu.displayStr());
+		System.out.println( "Aprï¿½s avoir jouï¿½ le lion...\n"+myJeu.displayStr());
 
 		System.out.println( "vG42 =>" + myJeu.poserPiece( Joueur.vert, Piece.gazelle, 4, 2));
 		myJeu.changeIfLionAround( 4, 2);
-		System.out.println( "Après avoir joué le gazelle...\n"+myJeu.displayStr());
+		System.out.println( "Aprï¿½s avoir jouï¿½ le gazelle...\n"+myJeu.displayStr());
 		
 		System.out.println( "rZ31 =>" + myJeu.poserPiece( Joueur.rouge, Piece.zebre, 3, 1));
 		myJeu.changeIfLionAround( 3, 1 );
-		System.out.println( "Après avoir joué le zebre...\n"+myJeu.displayStr());
+		System.out.println( "Aprï¿½s avoir jouï¿½ le zebre...\n"+myJeu.displayStr());
 
 
 	}
@@ -316,7 +318,7 @@ public class TestJeu {
 		for (int i = 0; i < result.length; i++) {
 		    if( result[i][0] != -1 ) {
 		        System.out.println( "Echange : "+myJeu.switchCrocoGazelleRegles(3,0, result[i][0], result[i][1]));
-		        System.out.println( "Après echange avec le croco...\n"+myJeu.displayStr());
+		        System.out.println( "Aprï¿½s echange avec le croco...\n"+myJeu.displayStr());
 		        return;
 		    }
         }
@@ -326,7 +328,7 @@ public class TestJeu {
 	{
 		Plateau myPlateau = p_jeu.getPlateau();
 		for( int indR=0; indR < Plateau.nbRegion; indR++) {
-			// le Str d'une Piece doit avoir 3 caractères de long
+			// le Str d'une Piece doit avoir 3 caractï¿½res de long
 			StringBuffer strbuf = new StringBuffer();
 			strbuf.append( " "+indR+" " );
 			

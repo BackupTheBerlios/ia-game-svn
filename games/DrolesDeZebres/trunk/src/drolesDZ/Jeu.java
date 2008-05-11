@@ -6,6 +6,8 @@
  */
 package drolesDZ;
 
+import game.GameException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -14,8 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Composé d'un JPlateau et de deux Joueurs.
- * On mémorise le dernier mouvement, ainsi que qui doit jouer.
+ * Composï¿½ d'un JPlateau et de deux Joueurs.
+ * On mï¿½morise le dernier mouvement, ainsi que qui doit jouer.
  * Enfin, pour voir, on peut calculer le facteur de branchement.
  * @author dutech
  */
@@ -27,7 +29,7 @@ public class Jeu {
 	static private JoueurFactory zeJoueurFactory;
 	
 	/**
-	 * Ca sera à 'rouge' de positionner Indiana.
+	 * Ca sera ï¿½ 'rouge' de positionner Indiana.
 	 */
 	public Jeu()
 	{
@@ -36,7 +38,7 @@ public class Jeu {
 		
 		zeEtat = new EtatJeu();
 		
-		// ca il faut continuer à le faire ici
+		// ca il faut continuer ï¿½ le faire ici
 		setJoueurs( new Joueur[2] );
 		setJoueur( Joueur.rouge, zeJoueurFactory.create( Joueur.rouge ));
 		setJoueur( Joueur.vert,  zeJoueurFactory.create( Joueur.vert ));
@@ -143,7 +145,7 @@ public class Jeu {
 	}
 
 	/**
-	 * Ouvre un fichier et crée un historique des mouvements joués. 
+	 * Ouvre un fichier et crï¿½e un historique des mouvements jouï¿½s. 
 	 * @param fileName
 	 * @return ArrayList de EtatJeu
 	 * @throws IOException
@@ -198,12 +200,12 @@ public class Jeu {
 
 	public ArrayList alterHistory( int index, Mouvement mvt, ArrayList history )
 	{
-	    // récupérer l'EtatJeu à modifier
+	    // rï¿½cupï¿½rer l'EtatJeu ï¿½ modifier
 	    EtatJeu etat = (EtatJeu) history.get( index-1 );
 	    setState( new EtatJeu(etat) );
-	    // le rendre valide par défaut
+	    // le rendre valide par dï¿½faut
 	    zeEtat.valide = true;
-	    //System.out.println( "Apply "+mvt.toString()+" à \n" + zeEtat.toString());
+	    //System.out.println( "Apply "+mvt.toString()+" ï¿½ \n" + zeEtat.toString());
 	    try {
             applyMove( mvt );
         }
@@ -243,7 +245,7 @@ public class Jeu {
 	 * Ouvre un fichier et applique au jeu au maximum nbMove Mouvements lus dans
 	 * le fichier. 
 	 * @param fileName
-	 * @param nbMoves Nombre de mouvement max appliqués
+	 * @param nbMoves Nombre de mouvement max appliquï¿½s
 	 * @throws GameException
 	 * @throws IOException
 	 */
@@ -270,8 +272,8 @@ public class Jeu {
 	}
 	/**
 	 * Applique un Mouvement au jeu actuel.
-	 * @param mvt à appliquer
-	 * @throws GameException en cas de Mouvement irrégulier
+	 * @param mvt ï¿½ appliquer
+	 * @throws GameException en cas de Mouvement irrï¿½gulier
 	 */
 	public void applyMove( Mouvement mvt )
 	throws GameException
@@ -282,7 +284,7 @@ public class Jeu {
 	            throw new GameException( "EtatJeu non valide");
 	        }
 	        if( mvt.zeJoueur == null ) {
-	            throw new GameException( "Pas de Joueur : " + mvt.toString());
+	            throw new GameException( "Pas de Player : " + mvt.toString());
 	        }
 	        if( getTour() < 0 ) { 
 	            setFirstJoueur( mvt.zeJoueur.couleur );
@@ -291,11 +293,11 @@ public class Jeu {
 	            throw new GameException( "Mauvais joueur : c'est au tour de " + Joueur.toString(getTour()) + " de jouer : " + mvt.toString());    
 	        }
 	        if( !poserPieceRegles(mvt.zeJoueur.couleur, mvt.zeType, mvt.posL, mvt.posC)) {
-	            throw new GameException( "Pose de Piece irrégulière : " + mvt.toString());
+	            throw new GameException( "Pose de Piece irrï¿½guliï¿½re : " + mvt.toString());
 	        }
 	        for( int ind=1; ind < mvt.nbEchange; ind++ ) {
 	            if( !switchCrocoGazelleRegles( mvt.echL[ind-1], mvt.echC[ind-1], mvt.echL[ind], mvt.echC[ind] )) {
-	                throw new GameException( "Echange de Piece irrégulier : " + mvt.toString());
+	                throw new GameException( "Echange de Piece irrï¿½gulier : " + mvt.toString());
 	            }
 	        }
 	        if( computeValidMoveIndiana() == false ) {
@@ -303,7 +305,7 @@ public class Jeu {
 	        }
 	        else {
 	            if( !bougerIndianaRegles( mvt.nbIndiana) ) {
-	                throw new GameException( "Mvt Impala irrégulier : "+mvt.toString());
+	                throw new GameException( "Mvt Impala irrï¿½gulier : "+mvt.toString());
 	            }
 	        }
 	        computeBonusScore();
@@ -316,7 +318,7 @@ public class Jeu {
 	    setTour( couleur );
 	}
 	/**
-	 * Détermine le prochain joueur.
+	 * Dï¿½termine le prochain joueur.
 	 */
 	public void nextJoueur()
 	{
@@ -339,8 +341,8 @@ public class Jeu {
 		computeScore();
 	}
 	/**
-	 * Un Joueur essaie de poser une Piece, et les règles sont appliquées.
-	 * @param joueur indice du Joueur
+	 * Un Player essaie de poser une Piece, et les rï¿½gles sont appliquï¿½es.
+	 * @param joueur indice du Player
 	 * @param type de la Piece
 	 * @param ligne du JPlateau
 	 * @param col du JPlateau
@@ -350,12 +352,12 @@ public class Jeu {
 	{
 	    // En fait on ne veut pas poser de piece
 	    if( type < 0 ) return true;
-	    // il faut qu'Indiana soit bien positionné
+	    // il faut qu'Indiana soit bien positionnï¿½
 	    if( (ligne != getPlateau().getLineFromIndiana()) && 
 	        (col != getPlateau().getColFromIndiana()) ) {
 	        return false;
 	    }
-		// peut-on poser cette pièce là?
+		// peut-on poser cette piï¿½ce lï¿½?
 		boolean pose = poserPiece( joueur, type, ligne, col);
 		if( pose == false ) {
 		    return false;
@@ -372,12 +374,12 @@ public class Jeu {
 			break;
 		case Piece.elephant :
 		case Piece.crocodile :
-		    //rien de spécial
+		    //rien de spï¿½cial
 		}		
 		return true;
 	}	
 	/**
-	 * Prendre une Piece de la reserve d'un Joueur pour la poser sur le JPlateau
+	 * Prendre une Piece de la reserve d'un Player pour la poser sur le JPlateau
 	 * @param joueur
 	 * @param type de la Piece
 	 * @param ligne du JPlateau
@@ -399,7 +401,7 @@ public class Jeu {
 	}
 	/**
 	 * Prendre une Piece du JPlateau pour la remettre dans la reserve d'un
-	 * Joueur.
+	 * Player.
 	 * @param ligne du Platean
 	 * @param col du JPlateau
 	 * @return true si c'est possible
@@ -458,7 +460,7 @@ public class Jeu {
 		return false;
 	}
 	/**
-	 * Essaie de poser Indiana en respectant les règles.
+	 * Essaie de poser Indiana en respectant les rï¿½gles.
 	 * @param position
 	 * @return true si la position est valide
 	 */public boolean poserIndianaRegles( int position )
@@ -535,7 +537,7 @@ public class Jeu {
 				return true;
 			}
 		}
-		// bien embetté car ni sur une ligne ni sur une colonne
+		// bien embettï¿½ car ni sur une ligne ni sur une colonne
 		return false;
 	}
 	
@@ -557,7 +559,7 @@ public class Jeu {
 		if( zePiece != null ) changedByLion( zePiece, ligne, col+1 );
 	}
 	/**
-	 * zebre->flipped, gazelle->enlevée.
+	 * zebre->flipped, gazelle->enlevï¿½e.
 	 */
 	public void changedByLion( Piece zePiece, int ligne, int col)
 	{
@@ -571,7 +573,7 @@ public class Jeu {
 		}
 	}
 	/**
-	 * Si un lion est à côté, zebre ou gazelle sont flippés.
+	 * Si un lion est ï¿½ cï¿½tï¿½, zebre ou gazelle sont flippï¿½s.
 	 * @param ligne du JPlateau
 	 * @param col du JPlateau
 	 */
@@ -586,7 +588,7 @@ public class Jeu {
 	 * Regarde si il y a un lion autour d'une certaine position.
 	 * @param ligne du JPlateau
 	 * @param col du JPlateau
-	 * @return true si un lion est à côté
+	 * @return true si un lion est ï¿½ cï¿½tï¿½
 	 */
 	public boolean isLionAround( int ligne, int col)
 	{
@@ -612,10 +614,10 @@ public class Jeu {
 	
 	/**
 	 * Cherche toutes les cases voisines qui sont des gazelles et 
-	 * derrière une rivière.
+	 * derriï¿½re une riviï¿½re.
 	 * @param ligne du Plateau
 	 * @param col du Plateau
-	 * @return Tableau[4][2] avec des -1 ou des coordonnées LxC de cases
+	 * @return Tableau[4][2] avec des -1 ou des coordonnï¿½es LxC de cases
 	 */
 	public int[][] possibleSwitchAroundCroco( int ligne, int col)
 	{
@@ -666,12 +668,12 @@ public class Jeu {
 	}
 	/**
 	 * Echange un Croco et une Gazelle.
-	 * En fonction de la présence de lion, la gazelle peut se retrouver flippée.
+	 * En fonction de la prï¿½sence de lion, la gazelle peut se retrouver flippï¿½e.
 	 * @param crocoL
 	 * @param crocoC
 	 * @param gazL
 	 * @param gazC
-	 * @return true si on a réussi
+	 * @return true si on a rï¿½ussi
 	 */
 	public boolean switchCrocoGazelleRegles( int crocoL, int crocoC, int gazL, int gazC ) 
 	{
@@ -694,9 +696,9 @@ public class Jeu {
 	    return false;
 	}
 	/**
-	 * Si le joueur vient de terminer une région, il a un bonus de 5.
+	 * Si le joueur vient de terminer une rï¿½gion, il a un bonus de 5.
 	 * @param p_joueur qui vient de jouer.
-	 * @return true si bonus accordé
+	 * @return true si bonus accordï¿½
 	 */
 	public boolean giveBonus( int p_joueur)
 	{
@@ -739,7 +741,7 @@ public class Jeu {
 	}
 
 	/**
-	 * Evalue la position actuelle du point du Joueur.
+	 * Evalue la position actuelle du point du Player.
 	 * @return
 	 */
 	public int getValue( Joueur p_joueur )

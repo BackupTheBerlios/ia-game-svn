@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package gui;
+package game.gui;
 
 import game.GameException;
 
@@ -30,16 +30,16 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
-import drolesDZ.AlphaBeta;
-import drolesDZ.EtatJeu;
-import drolesDZ.GenerateurMouvement;
-import drolesDZ.Jeu;
-import drolesDZ.Joueur;
-import drolesDZ.Mouvement;
+import diabalik.AlphaBeta;
+import diabalik.EtatJeu;
+import diabalik.GenerateurMouvement;
+import diabalik.Jeu;
+import diabalik.Joueur;
+import diabalik.Mouvement;
 /**
  * @author dutech
  */
-public class JGameHistory extends Composite {
+public class JJeu extends Composite {
 
     public Jeu game;
     public ArrayList history;
@@ -64,7 +64,7 @@ public class JGameHistory extends Composite {
      * @param parent
      * @param style
      */
-    public JGameHistory(Composite parent, int style)
+    public JJeu(Composite parent, int style)
     {
         super(parent, style);
    

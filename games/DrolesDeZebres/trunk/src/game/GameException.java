@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package drolesDZ;
+package game;
 
 /**
  * Ces exceptions expliquent des droles de trucs qui peuvent arriver
@@ -13,7 +13,12 @@ package drolesDZ;
  */
 public class GameException extends Exception {
 
-    public GameException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public GameException() {
         super();
     }
    

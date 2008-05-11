@@ -6,6 +6,7 @@
  */
 package drolesDZ;
 
+import game.GameException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -70,7 +71,7 @@ public class T_AlphaBeta extends TestCase {
 
 //    public void testAddEvalues()
 //    {
-//        // rien d'evalué
+//        // rien d'evaluï¿½
 //        AlphaBeta tmpAB = new AlphaBeta( new GenerateurMouvement() );
 //        Assert.assertTrue( tmpAB.listeJeuEvalues.isEmpty() );
 //        tmpAB.addEvalues( g_complete );

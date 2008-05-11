@@ -11,10 +11,10 @@ import java.util.StringTokenizer;
 
 /**
  * Un Mouvement doit permettre de refaire automatiquement le dernier coup.
- * Se compose d'un Joueur, d'un type de Piece, de la position jouée,
- * d'un éventuel switch avec une gazelle et du déplacement d'Indiana.
+ * Se compose d'un Player, d'un type de Piece, de la position jouï¿½e,
+ * d'un ï¿½ventuel switch avec une gazelle et du dï¿½placement d'Indiana.
  * <br><b>Attention</b> : si il y a un echange, echL[0] et echC[0] contiennent 
- * les coordonnées de départ de l'échange (pour 1 echanche, nbEchange == 2).
+ * les coordonnï¿½es de dï¿½part de l'ï¿½change (pour 1 echanche, nbEchange == 2).
  * @author dutech
  */
 public class Mouvement {
@@ -74,7 +74,7 @@ public class Mouvement {
         }
 	}
     /**
-     * @return true si les membres sont les mêmes
+     * @return true si les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -111,7 +111,7 @@ public class Mouvement {
 	    nbIndiana = p_nbIndiana;
 	}
 	/**
-	 * Ajoute un nouvel échange au Mouvement sauf si on atteint la taille
+	 * Ajoute un nouvel ï¿½change au Mouvement sauf si on atteint la taille
 	 * limite (renvoie false).
 	 * @param p_ligne
 	 * @param p_col
@@ -160,9 +160,9 @@ public class Mouvement {
 		return strbuf.toString();
 	}
 	/**
-	 * Extrait et met à jour un Mouvement à partir d'une String.
+	 * Extrait et met ï¿½ jour un Mouvement ï¿½ partir d'une String.
 	 * @param buff contient la descritpion du Mouvement
-	 * @param zeJeu le jeu associé
+	 * @param zeJeu le jeu associï¿½
 	 */
 	public void extractFrom( String buff , Jeu zeJeu)
 	{
@@ -170,7 +170,7 @@ public class Mouvement {
 	    String token;
 	    
 	    reset();
-	    // Joueur
+	    // Player
 	    token = st.nextToken();
 	    zeJoueur = zeJeu.getJoueur( token );
 	    // debug
@@ -178,7 +178,7 @@ public class Mouvement {
 //	        System.out.println( "(J)  "+token+" : "+ zeJoueur.toString());
 //	    }
 //	    else {
-//	        System.out.println( "(J)  "+token+" : "+ Joueur.type_nul);   
+//	        System.out.println( "(J)  "+token+" : "+ Player.type_nul);   
 //	    };
 	    // end-debug
 	    // Piece
@@ -206,7 +206,7 @@ public class Mouvement {
 		        // il faut lire pour la suite
 		        token = st.nextToken();
 	        }
-	        // devrait être Indiana
+	        // devrait ï¿½tre Indiana
 	        // debug
 	        // System.out.println( "(I)  "+token );
 	        if( token.equals("I") ) {

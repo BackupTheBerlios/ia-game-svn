@@ -9,7 +9,7 @@ package drolesDZ;
 import java.util.Arrays;
 
 /**
- * Un Joueur a une réserve de Piece à placer, un eventuel bonus, un score,
+ * Un Player a une rï¿½serve de Piece ï¿½ placer, un eventuel bonus, un score,
  * une couleur.
  * Il sait aussi s'afficher.
  * 
@@ -26,7 +26,7 @@ public class Joueur {
 	public int score;
 	
 	/** 
-	 * Une reserve de piece à placer.
+	 * Une reserve de piece ï¿½ placer.
 	 */
 	public int[] reserve;
 	
@@ -55,7 +55,7 @@ public class Joueur {
 	    }
 	}
 	/**
-     * @return true si tous les membres sont les mêmes
+     * @return true si tous les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -75,7 +75,7 @@ public class Joueur {
         return false;
     }
     /**
-     * @return true s'ils ont la même couleur.
+     * @return true s'ils ont la mï¿½me couleur.
      */
     public boolean same( Joueur jou)
     {
@@ -87,7 +87,7 @@ public class Joueur {
     }
     
 	/**
-	 * Prendre une Piece de la réserve pour la jouer.
+	 * Prendre une Piece de la rï¿½serve pour la jouer.
 	 * @param type de la Piece
 	 * @return true si on peut prendre cette Piece
 	 */

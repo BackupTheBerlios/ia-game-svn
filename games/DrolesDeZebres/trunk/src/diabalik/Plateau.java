@@ -7,18 +7,20 @@
 package diabalik;
 
 import java.util.Arrays;
+import java.util.Observable;
 
 /**
  * @author dutech
  */
-public class Plateau {
+public class Plateau extends Observable 
+{
 	public final static int tailleL = 7;
 	public final static int tailleC = 7;
 	
 	/** 
 	 * Une Grille de {@link Piece}.
 	 */
-	public Piece[][] cases;
+	private Piece[][] cases;
 	
 	public Plateau()
 	{
@@ -45,7 +47,7 @@ public class Plateau {
 	}
 	
 	/**
-     * @return true si tous les membres sont les mêmes
+     * @return true si tous les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -174,6 +176,7 @@ public class Plateau {
 	public void setCase( PositionGrid2D pos, Piece pion)
 	{
 		cases[pos.y][pos.x] = pion;
+		super.setChanged();
 	}
 	
 //	/**
@@ -193,7 +196,7 @@ public class Plateau {
 //		return null;
 //	}
 //	/**
-//	 * @return null si Empty ou deja à gauche
+//	 * @return null si Empty ou deja ï¿½ gauche
 //	 */
 //	public Piece getCaseLeft( int ligne, int col)
 //	{
@@ -201,7 +204,7 @@ public class Plateau {
 //		return cases[ligne][col-1];
 //	}
 //	/**
-//	 * @return null si Empty ou deja à droite
+//	 * @return null si Empty ou deja ï¿½ droite
 //	 */
 //	public Piece getCaseRight( int ligne, int col)
 //	{

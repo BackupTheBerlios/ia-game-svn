@@ -6,6 +6,8 @@
  */
 package drolesDZ;
 
+import game.GameException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
@@ -46,7 +48,7 @@ public class GenerateurMouvement {
 	    try {
 	        potentialJeu( zeJeu );
         } catch (GameException e) {
-            System.err.println( "Bizzare : on génère des éventuels mouvents irréguliers.");
+            System.err.println( "Bizzare : on gï¿½nï¿½re des ï¿½ventuels mouvents irrï¿½guliers.");
         }
 	    
 	    int nbPotential = listeJeu.size();
@@ -81,15 +83,15 @@ public class GenerateurMouvement {
 	    potentialPiece( zeJoueur );
 	    
 	    // DEBUG ************************
-	    displayListePos();
-	    displayListePiece();
+	    //displayListePos();
+	    //displayListePiece();
 	    // ******************************
 	    
 	    for( Iterator  iL = listePosL.iterator(), iC = listePosC.iterator();
 	    iL.hasNext(); ) {
 	        Integer posL = (Integer) iL.next();
 	        Integer posC = (Integer) iC.next();
-	        // des pièces à jouer
+	        // des piï¿½ces ï¿½ jouer
 	        if( listePiece.isEmpty() == false ) {
 	            for( Iterator  iP = listePiece.iterator(); iP.hasNext(); ) {
 	                Integer type = (Integer) iP.next();
@@ -103,13 +105,13 @@ public class GenerateurMouvement {
 	                
 	                // le mouvement devrait s'appliquer
 	                if( !newJeu.poserPieceRegles(mvt.zeJoueur.couleur, mvt.zeType, mvt.posL, mvt.posC)) {
-	                    throw new GameException( "Pose de Piece irrégulière");
+	                    throw new GameException( "Pose de Piece irrï¿½guliï¿½re");
 	                }
 	                makeMovesIndiana( newJeu, mvt );
 	                makeMovesSwitch( newJeu, mvt );
 	            }
 	        }
-	        else { // pas de piece à joueur
+	        else { // pas de piece ï¿½ joueur
 	            Jeu newJeu = new Jeu( zeJeu );
 	            // mouvement nul
 	            Mouvement mvt = new Mouvement();
@@ -117,12 +119,12 @@ public class GenerateurMouvement {
 		        mvt.setNoPiece();
 
                 // DEBUG *************************
-                System.out.println( "potentialJeu : " + mvt.toString());
+                //System.out.println( "potentialJeu : " + mvt.toString());
                 // *******************************
 		        
 		        // le mouvement devrait s'appliquer
                 if( !newJeu.poserPieceRegles(mvt.zeJoueur.couleur, mvt.zeType, mvt.posL, mvt.posC)) {
-                    throw new GameException( "Pose de Piece irrégulière");
+                    throw new GameException( "Pose de Piece irrï¿½guliï¿½re");
                 }
                 makeMovesIndiana( newJeu, mvt );
                 makeMovesSwitch( newJeu, mvt );
@@ -132,15 +134,15 @@ public class GenerateurMouvement {
 	/** 
 	 * Cherche si des 
 	 * echanges sont possibles avant de chercher le mvt d'Indiana
-	 * @param aJeu où il faut appliquer le Mouvement
-	 * @param aMvt à appliquer
+	 * @param aJeu oï¿½ il faut appliquer le Mouvement
+	 * @param aMvt ï¿½ appliquer
 	 * @throws GameException
 	 */
 	public void makeMovesSwitch( Jeu aJeu, Mouvement aMvt )
 	throws GameException
 	{
         
-        // peut-on faire des échanges
+        // peut-on faire des ï¿½changes
         if(aMvt.zeType == Piece.crocodile) {
 
             // trouver les positions du croco
@@ -161,11 +163,11 @@ public class GenerateurMouvement {
                 // *************************************************
                 
                 if( (echange[indE][0] != -1) && (echange[indE][1] != -1) ) {
-                    // on le fait si c'est pas revenir en arrière...
+                    // on le fait si c'est pas revenir en arriï¿½re...
                     if( aMvt.nbEchange == 0 ) {
-                        // Premier échange
+                        // Premier ï¿½change
                         Mouvement swapMvt = new Mouvement(aMvt);
-                        // ne continuera que si on n'atteint pas le nb d'échange maxi.
+                        // ne continuera que si on n'atteint pas le nb d'ï¿½change maxi.
                         if(swapMvt.addEchange( echange[indE][0], echange[indE][1])) {
                             Jeu swapJeu = new Jeu( aJeu );
                             
@@ -185,7 +187,7 @@ public class GenerateurMouvement {
                         if( (echange[indE][0] != aMvt.echL[aMvt.nbEchange-2]) ||
                                 (echange[indE][1] != aMvt.echC[aMvt.nbEchange-2]) ) {
                             Mouvement swapMvt = new Mouvement(aMvt);
-                            // ne continuera que si on n'atteint pas le nb d'échange maxi.
+                            // ne continuera que si on n'atteint pas le nb d'ï¿½change maxi.
                             if (swapMvt.addEchange( echange[indE][0], echange[indE][1])) {
                                 Jeu swapJeu = new Jeu( aJeu );
                                 
@@ -206,10 +208,10 @@ public class GenerateurMouvement {
         }
 	}
 	/**
-	 * Chercher les mouvements d'Indiana à partir d'un mouvement de Piece déjà appliqué
-	 * à une situation de jeu.
-	 * @param aJeu où le mvt a été appliqué
-	 * @param aMvt le mvt appliqué
+	 * Chercher les mouvements d'Indiana ï¿½ partir d'un mouvement de Piece dï¿½jï¿½ appliquï¿½
+	 * ï¿½ une situation de jeu.
+	 * @param aJeu oï¿½ le mvt a ï¿½tï¿½ appliquï¿½
+	 * @param aMvt le mvt appliquï¿½
 	 */
 	public void makeMovesIndiana( Jeu aJeu, Mouvement aMvt )
 	throws GameException
@@ -221,7 +223,7 @@ public class GenerateurMouvement {
 	                Jeu nextJeu = new Jeu(aJeu);
 	                if( !nextJeu.bougerIndianaRegles(aJeu.getValidMoveIndiana(i))) {
 	                    
-	                    throw new GameException( "Mouvement Impala irrégulier\n"
+	                    throw new GameException( "Mouvement Impala irrï¿½gulier\n"
 	                            +nextJeu.displayStr()
 	                            +"\n Impala -> "+aJeu.getValidMoveIndiana(i)+"\n");
 	                }
@@ -349,7 +351,7 @@ public class GenerateurMouvement {
         return strbuf.toString();
 	}
 	/**
-	 * Cherche toutes les pieces qui peuvent être joueé par un Joueur.
+	 * Cherche toutes les pieces qui peuvent ï¿½tre joueï¿½ par un Player.
 	 * @param zeJoueur
 	 */
 	public void potentialPiece( Joueur zeJoueur )

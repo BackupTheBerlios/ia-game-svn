@@ -6,15 +6,14 @@
  */
 package diabalik;
 
-
 /**
- * Un Joueur pour Diabalik.
+ * Un Player pour Diabalik.
  * Une couleur.
  * Il sait aussi s'afficher.
  * 
  * @author dutech
  */
-public class Joueur {
+public class Joueur implements game.Player {
 	public static final int jaune = 0;
 	public static final int rouge = 1;
 	public final static String[] type_str = {"j", "r"};
@@ -24,23 +23,23 @@ public class Joueur {
 	
 	
 	/**
-	 * Joueur vide sans couleur.
+	 * Player vide sans couleur.
 	 */
 	public Joueur()
 	{
 	    couleur = -1;
 	}
 	/**
-	 * Copie d'un autre Joueur.
+	 * Copie d'un autre Player.
 	 * @param zeJoueur
 	 */
 	public Joueur( Joueur zeJoueur )
 	{
 	    couleur = zeJoueur.couleur;
 	}
-	/**
-     * @return true si tous les membres sont les mêmes
-     */
+	/* (non-Javadoc)
+	 * @see diabalik.IJoueur#equals(java.lang.Object)
+	 */
     public boolean equals(Object obj)
     {
         if (obj instanceof Joueur) {
@@ -50,24 +49,32 @@ public class Joueur {
         }
         return false;
     }
-    /**
-     * @return true s'ils ont la même couleur.
-     */
-    public boolean sameColor( Joueur jou)
+    /* (non-Javadoc)
+	 * @see diabalik.IJoueur#sameColor(diabalik.Joueur)
+	 */
+    public boolean sameColor( game.Player jou)
     {
-        if( jou == null ) return false;
-        if (couleur == jou.couleur) {
-            return true;
-        }
+    	if( jou == null ) return false;
+    	if (jou instanceof Joueur) {
+			Joueur player = (Joueur)jou;
+			
+	        if (couleur == player.couleur) {
+	            return true;
+	        }
+		}
+        
         return false;
     }
 	
+	/* (non-Javadoc)
+	 * @see diabalik.IJoueur#toString()
+	 */
 	public String toString()
 	{
 	    return toString( couleur );
 	}
 	/**
-	 * Crée un String a partir d'un indice de couleur.
+	 * Crï¿½e un String a partir d'un indice de couleur.
 	 * @param couleur
 	 * @return 
 	 */
@@ -81,7 +88,7 @@ public class Joueur {
 	    }
 	}
 	/**
-	 * Décode un indice de couleur à partir d'un String.
+	 * Dï¿½code un indice de couleur ï¿½ partir d'un String.
 	 * @param token
 	 * @return
 	 */

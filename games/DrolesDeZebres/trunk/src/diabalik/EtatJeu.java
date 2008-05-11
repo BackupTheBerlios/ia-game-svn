@@ -8,26 +8,28 @@ package diabalik;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Observable;
 
 /**
- * Rassemble toutes les données du Jeu. Fait essentiellement pour être 
- * "léger" et ne pas prendre trop de place en mémoire.
+ * Rassemble toutes les donnï¿½es du Jeu. Fait essentiellement pour ï¿½tre 
+ * "lï¿½ger" et ne pas prendre trop de place en mï¿½moire.
  * @author dutech
  */
-public class EtatJeu {
+public class EtatJeu extends Observable 
+{
     public Plateau zePlateau;
 	public Joueur[] zeJoueurs;
-	public Mouvement dernierMvt;
-	public int tour;
-	public int nbMvtLeft;
-	public boolean finJeu;
-	public ArrayList<Mouvement> bestMoves; // meilleurs Mvt à faire
-	public boolean valide;
+	private Mouvement dernierMvt;
+	private int tour;
+	private int nbMvtLeft;
+	private boolean finJeu;
+	public ArrayList<Mouvement> bestMoves; // meilleurs Mvt ï¿½ faire
+	private boolean valide;
 	public String errMsg;
 	
 	/**
-	 * Le premier Joueur est à spécifier.
-	 * Attention, les Joueurs ne sont pas créés!
+	 * Le premier Player est Ã  spÃ©cifier.
+	 * Attention, les Joueurs ne sont pas crÃ©Ã©s!
 	 * (comment faire autrement).
 	 */
 	public EtatJeu()
@@ -43,6 +45,8 @@ public class EtatJeu {
 		
 		valide = true;
 		errMsg = null;
+		
+		super.setChanged();
 	}
 	public EtatJeu( EtatJeu zeEtat) 
 	{
@@ -68,10 +72,11 @@ public class EtatJeu {
 	    else {
 	        errMsg = null;
 	    }
+	    super.setChanged();
 	}
 	
 	/**
-	 * Tout est remis à zéro (sauf les Joueurs).
+	 * Tout est remis ï¿½ zï¿½ro (sauf les Joueurs).
 	 */
 	public void reset()
 	{
@@ -86,12 +91,13 @@ public class EtatJeu {
 		
 		valide = true;
 		errMsg = null;
+		super.setChanged();
 	}
 	
 	/**
-	 * Si ils sont tous les deux valides, on ne regarde que l'état,
+	 * Si ils sont tous les deux valides, on ne regarde que l'ï¿½tat,
 	 * pas le dernier Mouvement.
-     * @return true si tous les membres sont les mêmes
+     * @return true si tous les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -162,5 +168,61 @@ public class EtatJeu {
 		
         return strbuf.toString();
     }
+	/** (non-Javadoc)
+	 * @see java.util.Observable#hasChanged()
+	 */
+	@Override
+	public synchronized boolean hasChanged()
+	{
+		if( super.hasChanged() ) {
+			return super.hasChanged();
+		}
+		else {
+			//TODO return avec BestMoves ou Joueur ???
+			return zePlateau.hasChanged();
+		}
+	}
+	@Override
+	protected synchronized void setChanged()
+	{
+		super.setChanged();
+	}
+	public Mouvement getLastMove()
+	{
+		return dernierMvt;
+	}
+	public void setLastMove( Mouvement mvt)
+	{
+		dernierMvt = mvt;
+		super.setChanged();
+	}
+	public int getTurn()
+	{
+		return tour;
+	}
+	public void setTurn(int tour)
+	{
+		this.tour = tour;
+		super.setChanged();
+	}
+	public int getNbMvtLeft()
+	{
+		return nbMvtLeft;
+	}
+	public void setNbMvtLeft(int nbMvtLeft)
+	{
+		this.nbMvtLeft = nbMvtLeft;
+		super.setChanged();
+	}
+	public boolean isValid()
+	{
+		return valide;
+	}
+	public void setValid(boolean valide)
+	{
+		this.valide = valide;
+		super.setChanged();
+	}
+	
     
 }

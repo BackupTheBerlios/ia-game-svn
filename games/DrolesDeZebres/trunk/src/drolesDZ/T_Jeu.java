@@ -6,6 +6,8 @@
  */
 package drolesDZ;
 
+import game.GameException;
+
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -74,7 +76,7 @@ public class T_Jeu extends TestCase {
 
     public void testApplyMoves()
     {
-        // d'abord d'après interne
+        // d'abord d'aprï¿½s interne
         Jeu g_interne = new Jeu();
         try {
             FileWriter myFile = new FileWriter( "T_Jeu_2.mvt" );
@@ -115,7 +117,7 @@ public class T_Jeu extends TestCase {
 //                +"\n"+g_file.displayStr());
         Assert.assertTrue( g_interne.equals(g_file));
         
-//      puis avec le fichier sauvegardé
+//      puis avec le fichier sauvegardï¿½
         Jeu g_save = new Jeu();
         try {
             g_save.applyMoves( "T_Jeu_2.mvt");
@@ -143,7 +145,7 @@ public class T_Jeu extends TestCase {
         }
         catch (GameException e) {
             System.out.println(  e.getMessage() );
-            Assert.assertTrue( e.getMessage().startsWith( "Pas de Joueur"));
+            Assert.assertTrue( e.getMessage().startsWith( "Pas de Player"));
         }
         try {
             g_start.applyMove( m_rZ11I2 );
@@ -184,10 +186,10 @@ public class T_Jeu extends TestCase {
 
     public void testLoadHistory()
     {
-        //avec le fichier sauvegardé
+        //avec le fichier sauvegardï¿½
         Jeu g_save = new Jeu();
         ArrayList historique;
-        // puis d'après interne
+        // puis d'aprï¿½s interne
         Jeu g_interne = new Jeu();
 
         EtatJeu fromHisto;

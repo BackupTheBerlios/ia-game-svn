@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * Rassemble toutes les données du Jeu. Fait essentiellement pour être 
- * "léger" et ne pas prendre trop de place en mémoire.
+ * Rassemble toutes les donnï¿½es du Jeu. Fait essentiellement pour ï¿½tre 
+ * "lï¿½ger" et ne pas prendre trop de place en mï¿½moire.
  * @author dutech
  */
 public class EtatJeu {
@@ -24,13 +24,13 @@ public class EtatJeu {
 	public int[] validMoveIndiana = {-1, -1, -1, -1};
 	public boolean finJeu;
 	public int nbPotential;
-	public ArrayList bestMoves; // meilleurs Mvt à faire
+	public ArrayList bestMoves; // meilleurs Mvt ï¿½ faire
 	public boolean valide;
 	public String errMsg;
 	
 	/**
-	 * Le premier Joueur est à spécifier.
-	 * Attention, les Joueurs ne sont pas créés!
+	 * Le premier Player est ï¿½ spï¿½cifier.
+	 * Attention, les Joueurs ne sont pas crï¿½ï¿½s!
 	 * (comment faire autrement).
 	 */
 	public EtatJeu()
@@ -79,7 +79,7 @@ public class EtatJeu {
 	}
 	
 	/**
-	 * Tout est remis à zéro (sauf les Joueurs).
+	 * Tout est remis ï¿½ zï¿½ro (sauf les Joueurs).
 	 */
 	public void reset()
 	{
@@ -97,9 +97,9 @@ public class EtatJeu {
 	}
 	
 	/**
-	 * Si ils sont tous les deux valides, on ne regarde que l'état,
+	 * Si ils sont tous les deux valides, on ne regarde que l'ï¿½tat,
 	 * pas le dernier Mouvement.
-     * @return true si tous les membres sont les mêmes
+     * @return true si tous les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -170,7 +170,7 @@ public class EtatJeu {
 		
 		//strbuf.append( "derJ = " + dernierMvt.zeJoueur.couleur + " "+ dernierMvt.zeJoueur.displayReserve()+"\n"); // debug
 		
-		// présente les valeurs des régions
+		// prï¿½sente les valeurs des rï¿½gions
 		strbuf.append( "\n valRegions = ");
 		for( int indR = 0; indR < Plateau.nbRegion; indR++ ) {
 			if( zePlateau.valRegions[indR][Plateau.indJ] != -1 ) {
@@ -182,7 +182,7 @@ public class EtatJeu {
 			strbuf.append( zePlateau.valRegions[indR][Plateau.indV]+"|");
 		}
 		strbuf.append( "\n\n");
-		// présente les reserves
+		// prï¿½sente les reserves
 		strbuf.append( "reserve: Z|G|E|L|C|\n");
 		for( int coul=0; coul<2; coul++) {
 			strbuf.append( "  -> "+zeJoueurs[coul].toString()+" : "

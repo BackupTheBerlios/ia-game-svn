@@ -7,8 +7,8 @@
 package diabalik;
 
 /**
- * Une Piece pour Diabalik : un type, une façon de s'afficher et appartient à
- * un Joueur. 
+ * Une Piece pour Diabalik : un type, une faï¿½on de s'afficher et appartient ï¿½
+ * un Player. 
  * On peut aussi l'afficher (displayStr)
  * @author dutech
  */
@@ -26,7 +26,7 @@ public class Piece {
 	
 	/**
 	 * Piece vide.
-	 * Sans type, sans Joueur.
+	 * Sans type, sans Player.
 	 */
 	public Piece()
 	{
@@ -46,7 +46,7 @@ public class Piece {
 	}
 	
 	/**
-     * @return true si tous les membres sont les mêmes
+     * @return true si tous les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -65,7 +65,7 @@ public class Piece {
     }
 	
 	/**
-	 * Prépare une chaine de format joueur+type+val.
+	 * Prï¿½pare une chaine de format joueur+type+val.
 	 */
 	public void setDisplayStr()
 	{
@@ -80,7 +80,7 @@ public class Piece {
 		m_displayStr = strbuf.toString();
 	}
 	/**
-	 * Le format long pour une piece, en ayant appelé setDisplayStr auparavant.
+	 * Le format long pour une piece, en ayant appelï¿½ setDisplayStr auparavant.
 	 * @return String de la forme joueur+type+val
 	 */
 	public String displayStr()
@@ -89,7 +89,7 @@ public class Piece {
 	}
 	
 	/**
-	 * Juste un caractère qui dépend du type.
+	 * Juste un caractï¿½re qui dï¿½pend du type.
 	 * @return String
 	 */
 	public String toString()
@@ -97,7 +97,7 @@ public class Piece {
 	    return toString( type );
 	}
 	/**
-	 * Crée un String a partir d'un indice de type.
+	 * Crï¿½e un String a partir d'un indice de type.
 	 * @param p_type
 	 * @return
 	 */
@@ -111,7 +111,7 @@ public class Piece {
 	    }
 	}
 	/**
-	 * Renvoie le type de la piece codée par ce token.
+	 * Renvoie le type de la piece codï¿½e par ce token.
 	 * @param token
 	 * @return le type de la piece.
 	 */

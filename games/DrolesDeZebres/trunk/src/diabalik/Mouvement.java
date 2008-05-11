@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 
 /**
  * Un Mouvement doit permettre de refaire automatiquement le dernier coup.
- * Se compose d'un Joueur, d'un type de mouvement, de la position de depart et de la
+ * Se compose d'un Player, d'un type de mouvement, de la position de depart et de la
  * position d'arrivee.
  *
  * @author dutech
@@ -53,7 +53,7 @@ public class Mouvement {
 	    init();
 	}
     /**
-     * @return true si les membres sont les mêmes
+     * @return true si les membres sont les mï¿½mes
      */
     public boolean equals(Object obj)
     {
@@ -100,9 +100,9 @@ public class Mouvement {
 		return strbuf.toString();
 	}
 	/**
-	 * Extrait et met à jour un Mouvement à partir d'une String.
+	 * Extrait et met ï¿½ jour un Mouvement ï¿½ partir d'une String.
 	 * @param buff contient la descritpion du Mouvement
-	 * @param zeJeu le jeu associé
+	 * @param zeJeu le jeu associï¿½
 	 */
 	public void extractFrom( String buff , Jeu zeJeu)
 	{
@@ -110,7 +110,7 @@ public class Mouvement {
 	    String token;
 	    
 	    reset();
-	    // Joueur
+	    // Player
 	    token = st.nextToken();
 	    zeJoueur = zeJeu.getJoueur( token );
 	    // debug
@@ -118,7 +118,7 @@ public class Mouvement {
 //	        System.out.println( "(J)  "+token+" : "+ zeJoueur.toString());
 //	    }
 //	    else {
-//	        System.out.println( "(J)  "+token+" : "+ Joueur.type_nul);   
+//	        System.out.println( "(J)  "+token+" : "+ Player.type_nul);   
 //	    };
 	    // end-debug
 	    // Piece
@@ -151,7 +151,7 @@ public class Mouvement {
 	}
 	
 	/**
-	 * Crée un String a partir d'un type de mouvement.
+	 * Crï¿½e un String a partir d'un type de mouvement.
 	 * @param couleur
 	 * @return 
 	 */
@@ -165,7 +165,7 @@ public class Mouvement {
 	    }
 	}
 	/**
-	 * Décode un type de mouvement à partir d'un String.
+	 * Dï¿½code un type de mouvement ï¿½ partir d'un String.
 	 * @param token
 	 * @return
 	 */

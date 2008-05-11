@@ -6,18 +6,15 @@
  */
 package diabalik;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import drolesDZ.GameException;
+import game.GameException;
+
+import java.io.IOException;
+
 
 /**
- * Composé d'un JPlateau et de deux Joueurs.
- * On mémorise le dernier mouvement, ainsi que qui doit jouer.
+ * ComposÃ© d'un JPlateau, de deux Joueurs et d'un historique de coups.
+ * On mÃ©morise le dernier mouvement, ainsi que qui doit jouer.
  * Enfin, pour voir, on peut calculer le facteur de branchement.
  * @author dutech
  */
@@ -25,11 +22,13 @@ public class Jeu {
 
 	private EtatJeu zeEtat;
 	
+	Historique zeHistorique;
+	
 	static private PieceFactory zePieceFactory;
 	static private JoueurFactory zeJoueurFactory;
 	
 	/**
-	 * Ca sera à 'rouge' de positionner Indiana.
+	 * Ca sera ï¿½ 'rouge' de positionner Indiana.
 	 */
 	public Jeu()
 	{
@@ -37,14 +36,11 @@ public class Jeu {
 		zeJoueurFactory = new JoueurFactory();
 		
 		zeEtat = new EtatJeu();
+		zeHistorique = new Historique( this );
 		
-		// ca il faut continuer à le faire ici
-		setJoueurs( new Joueur[2] );
-		setJoueur( Joueur.jaune, zeJoueurFactory.create( Joueur.jaune ));
-		setJoueur( Joueur.rouge,  zeJoueurFactory.create( Joueur.rouge ));
+		initEtatJeu( zeEtat );
 		
-		initPlateau();
-		setFirstJoueur(Joueur.rouge);
+		zeHistorique.add( new EtatJeu(zeEtat) );
 	}
 	public Jeu( Jeu zeJeu )
 	{
@@ -59,19 +55,30 @@ public class Jeu {
 	    return false;
 	}
 	
-	void initPlateau()
+	public Historique getHistorique()
 	{
-		Plateau board = getPlateau();
+		return zeHistorique;
+	}
+	
+	void initEtatJeu(EtatJeu etat)
+	{
+		etat.zeJoueurs = new Joueur[2];
+		etat.zeJoueurs[Joueur.jaune] = zeJoueurFactory.create( Joueur.jaune );
+		etat.zeJoueurs[Joueur.rouge] = zeJoueurFactory.create( Joueur.rouge );
+		
+		Plateau board = etat.zePlateau;
 		for(int col = 0; col < 7; col ++) {
 			if( col != 3) {
-				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur );
-				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur );
+				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur ));
+				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur ));
 			}
 			else {
-				board.cases[6][col] = zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur );
-				board.cases[0][col] = zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur );
+				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur ));
+				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur ));
 			}
 		}
+		etat.setTurn( Joueur.rouge);
+		etat.setChanged();
 	}
 	
 	/*
@@ -109,115 +116,23 @@ public class Jeu {
 	{
 	    zeEtat.zeJoueurs[coul] = jou;
 	}
-	public Mouvement getDernierMvt()
-	{
-	    return zeEtat.dernierMvt;
-	}
-	public void setDernierMvt( Mouvement mvt )
-	{
-	    zeEtat.dernierMvt = mvt;
-	}
-	public int getTour()
-	{
-	    return zeEtat.tour;
-	}
-	public void setTour( int coul )
-	{
-	    zeEtat.tour = coul;
-	}
-	public boolean getFinJeu()
-	{
-	    return zeEtat.finJeu;
-	}
-	public void setFinJeu( boolean flag)
-	{
-	    zeEtat.finJeu = flag;
-	}
+//	public int getTour()
+//	{
+//	    return zeEtat.tour;
+//	}
+//	public void setTour( int coul )
+//	{
+//	    zeEtat.tour = coul;
+//	}
+//	public boolean getFinJeu()
+//	{
+//	    return zeEtat.finJeu;
+//	}
+//	public void setFinJeu( boolean flag)
+//	{
+//	    zeEtat.finJeu = flag;
+//	}
 
-	/**
-	 * Ouvre un fichier et crée un historique des mouvements joués. 
-	 * @param fileName
-	 * @return ArrayList de EtatJeu
-	 * @throws IOException
-	 */
-	public ArrayList<EtatJeu> loadHistory( String fileName )
-	throws IOException
-	{
-	    FileReader myFile = new FileReader( fileName );
-	    BufferedReader myReader = new BufferedReader( myFile );
-	    
-	    String lineRead = myReader.readLine();
-	    Mouvement mvtRead = new Mouvement();
-	    
-	    zeEtat.reset();
-	    ArrayList<EtatJeu> history = new ArrayList<EtatJeu>();
-	    history.add( new EtatJeu( zeEtat ));
-	    
-	    int nbLu = 0;
-	    while(lineRead != null) {
-	        nbLu ++;
-	        try {
-	            mvtRead.extractFrom( lineRead, this);
-	            applyMove( mvtRead );
-	        }
-	        catch (Exception e) {
-	            zeEtat.valide = false;
-	            zeEtat.errMsg = e.getMessage();
-	        }
-	        history.add( new EtatJeu( zeEtat ));
-	        //System.out.println(  displayStr() );//debug
-	        lineRead = myReader.readLine();
-	    }
-	    
-	    myFile.close();
-	    return history;
-	}
-	public void writeHistory( String fileName, ArrayList<EtatJeu> history )
-	throws IOException
-	{
-	    FileWriter myFile = new FileWriter( fileName );
-	    BufferedWriter myWriter = new BufferedWriter( myFile );
-	    
-	    EtatJeu etat = null;
-	    for( int index=0; index < history.size(); index++ ) {
-	        etat = (EtatJeu) history.get( index );
-	        myWriter.write( etat.dernierMvt.toString());
-	        myWriter.newLine();
-	    }
-	    myWriter.close();
-	    myFile.close();
-	}
-
-	public ArrayList<EtatJeu> alterHistory( int index, Mouvement mvt, ArrayList<EtatJeu> history )
-	{
-	    // récupérer l'EtatJeu à modifier
-	    EtatJeu etat = (EtatJeu) history.get( index-1 );
-	    setState( new EtatJeu(etat) );
-	    // le rendre valide par défaut
-	    zeEtat.valide = true;
-	    //System.out.println( "Apply "+mvt.toString()+" à \n" + zeEtat.toString());
-	    try {
-            applyMove( mvt );
-        }
-        catch (Exception e) {
-            zeEtat.valide = false;
-            zeEtat.errMsg = e.getMessage();
-        }
-        history.set( index, new EtatJeu( zeEtat ));
-        
-	    for( int i=index+1; i < history.size(); i++ ) {
-	        etat = (EtatJeu) history.get( i );
-	        try {
-	            applyMove( etat.dernierMvt );
-	        }
-	        catch (Exception e) {
-	            zeEtat.valide = false;
-	            zeEtat.errMsg = e.getMessage();
-	        }    
-	        history.set( i, new EtatJeu( zeEtat ));
-        }
-	    return history;
-	}
 	
 	/**
 	 * Ouvre un fichier et applique au jeu tous les Mouvements lus dans
@@ -229,120 +144,120 @@ public class Jeu {
 	public void applyMoves( String fileName )
 	throws GameException, IOException
 	{
-	    applyMoves( fileName, Integer.MAX_VALUE );
+		zeHistorique.readFromFile(fileName);
+		zeEtat = zeHistorique.getState(0);
+	    //applyMoves( fileName, Integer.MAX_VALUE );
 	}
 	/**
-	 * Ouvre un fichier et applique au jeu au maximum nbMove Mouvements lus dans
-	 * le fichier. 
-	 * @param fileName
-	 * @param nbMoves Nombre de mouvement max appliqués
-	 * @throws GameException
-	 * @throws IOException
+	 * Applique un Mouvement Ã  l'EtatJeu courant.
+	 * @param mvt Ã  appliquer
+	 * @throws GameException en cas de Mouvement irrÃ©gulier
 	 */
-	public void applyMoves( String fileName, int nbMove )
-	throws GameException, IOException
-	{
-	    FileReader myFile = new FileReader( fileName );
-	    BufferedReader myReader = new BufferedReader( myFile );
-	    
-	    String lineRead = myReader.readLine();
-	    Mouvement mvtRead = new Mouvement();
-	    
-	    int nbLu = 0;
-	    while( (lineRead != null) && (nbLu < nbMove)) {
-	        nbLu ++;
-	        
-	        mvtRead.extractFrom( lineRead, this);
-	        applyMove( mvtRead );
-	        //System.out.println(  displayStr() );//debug
-	        lineRead = myReader.readLine();
-	    }
-	    
-	    myFile.close();
-	}
-	/**
-	 * Applique un Mouvement au jeu actuel.
-	 * @param mvt à appliquer
-	 * @throws GameException en cas de Mouvement irrégulier
-	 */
-	public void applyMove( Mouvement mvt )
+	public EtatJeu applyMove( Mouvement mvt)
 	throws GameException
 	{
+		applyMove( mvt, zeEtat );
+		zeHistorique.add( new EtatJeu( zeEtat ));
+		return zeEtat;
+	}
+	/**
+	 * Applique un Mouvement Ã  un EtatJeu.
+	 * ATTENTION : l'EtatJeu est modifiÃ©.
+	 * TODO : faire qu'on applique un Coup/Mouvement Ã  un EtatJeu, avec potentiellement
+	 *        un skelette de coup qui soit dÃ©terminÃ© par le jeu (comme ds Shazamm ???)
+	 * @param mvt Ã  appliquer
+	 * @param etat du jeu oÃ¹ le mouvement est appliquÃ©
+	 * @throws GameException en cas de Mouvement irrÃ©gulier
+	 */
+	public void applyMove( Mouvement mvt, EtatJeu etat )
+	throws GameException
+	{
+		//EtatJeu etatResult = new EtatJeu(etat);
+		
 	    if( mvt != null ) {
-	        setDernierMvt( mvt );
-	        if( getState().valide == false ) {
+	        etat.setLastMove( mvt );
+	        if( etat.isValid() == false ) {
 	            throw new GameException( "EtatJeu non valide");
 	        }
 	        if( mvt.zeJoueur == null ) {
-	            throw new GameException( "Pas de Joueur : " + mvt.toString());
+	            throw new GameException( "Pas de Player : " + mvt.toString());
 	        }
-	        if( getTour() < 0 ) { 
-	            setFirstJoueur( mvt.zeJoueur.couleur );
+	        if( etat.getTurn() < 0 ) {
+	        	// set first joueur
+	        	etat.setTurn( mvt.zeJoueur.couleur );
 	        }
-	        if( mvt.zeJoueur.couleur != getTour() ) {
-	            throw new GameException( "Mauvais joueur : c'est au tour de " + Joueur.toString(getTour()) + " de jouer : " + mvt.toString());    
+	        if( mvt.zeJoueur.couleur != etat.getTurn() ) {
+	            throw new GameException( "Mauvais joueur : c'est au tour de " + Joueur.toString(etat.getTurn()) + " de jouer : " + mvt.toString());    
 	        }
 	        
 	        // deplacer ?
 	        if( mvt.zeType == Mouvement.depl ) {
 	        	try {
-	        		deplacer(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        		//etat = deplacer( etat, mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        		deplacer( etat, mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
 	        	}
 	        	catch( MoveException me ) {
 	        		System.err.println("DEPLACER : " + me.getMessage());
-	        		throw new GameException( "Déplacement irrégulier : " + mvt.toString());
+	        		throw new GameException( "DÃ©placement irrÃ©gulier : " + mvt.toString());
 	        	}
-	        	zeEtat.nbMvtLeft--;
+	        	etat.setNbMvtLeft(etat.getNbMvtLeft()-1);
 	        }
 	        if( mvt.zeType == Mouvement.pass ) {
 	        	try {
-	        		fairePasse(mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        		//etat = fairePasse( etat, mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
+	        		fairePasse( etat, mvt.zeJoueur.couleur, mvt.posDebut, mvt.posFin);
 	        	}
 	        	catch( MoveException me ) {
 	        		System.err.println("PASSER : " + me.getMessage());
-	        		throw new GameException( "Passe irrégulière : " + mvt.toString());
+	        		throw new GameException( "Passe irrÃ©guliÃ¨re : " + mvt.toString());
 	        	}
-	        	zeEtat.nbMvtLeft--;
+	        	etat.setNbMvtLeft(etat.getNbMvtLeft()-1);;
 	        }
 	        if( mvt.zeType == Mouvement.none ) {
-	        	zeEtat.nbMvtLeft = 0;
+	        	etat.setNbMvtLeft(0);
 	        }
-	        if( zeEtat.nbMvtLeft == 0 ) {
-	        	zeEtat.nbMvtLeft = 3;
-	        	nextJoueur();
+	        if( etat.getNbMvtLeft() == 0 ) {
+	        	etat.setNbMvtLeft(3);
+	        	etat.setTurn( (etat.getTurn() + 1) % 2 );
 	        }
 	    }
+	    //return etat;
 	}
 	
-	public void setFirstJoueur( int couleur )
-	{
-	    setTour( couleur );
-	}
-	/**
-	 * Détermine le prochain joueur.
-	 */
-	public void nextJoueur()
-	{
-	    setTour(( getTour() + 1 ) % 2);
-	}
+//	public void setFirstJoueur( int couleur )
+//	{
+//	    setTour( couleur );
+//	}
+//	/**
+//	 * Dï¿½termine le prochain joueur.
+//	 */
+//	public void nextJoueur()
+//	{
+//	    setTour(( getTour() + 1 ) % 2);
+//	}
 	
 	/**
 	 * Deplace un joueur qui n'a pas la balle.
+	 * ATTENTION : l'EtatJeu est modifiÃ©.
+	 * TODO : faire qu'on applique un Coup/Mouvement Ã  un EtatJeu, avec potentiellement
+	 *        un skelette de coup qui soit dÃ©terminÃ© par le jeu (comme ds Shazamm ???)
+	 * @param etat EtatJeu sur qui on essaie de dÃ©placer un joueur
 	 * @param joueur
-	 * @param origin
-	 * @param wish
-	 * @return
+	 * @param origin Case d'origine du 'coureur'
+	 * @param wish Case d'arrivÃ©e du 'coureur'
+	 * @return EtatJeu le nouvel EtatJeu
 	 * @throws MoveException 
 	 */
-	public boolean deplacer( int joueur, PositionGrid2D origin, PositionGrid2D wish)
+	public void deplacer( EtatJeu etat, int joueur, PositionGrid2D origin, PositionGrid2D wish)
 		throws MoveException
 	{
-		Joueur player = getJoueur(joueur);
+		//EtatJeu etat = new EtatJeu( etat );
+		Joueur player = etat.zeJoueurs[joueur];
 		
-		// il existe un pion coureur dans la case de départ
-		Piece pion = getPlateau().getCase(origin);
+		// il existe un pion coureur dans la case de dÃ©part
+		Piece pion = etat.zePlateau.getCase(origin);
 		if( pion == null ) {
-			throw new MoveException("Pas de pion à déplacer");
+			throw new MoveException("Pas de pion Ã  dÃ©placer");
 		}
 		if( pion.m_joueur.sameColor(player) == false ) {
 			throw new MoveException("Pion pas de la bonne couleur");
@@ -351,54 +266,66 @@ public class Jeu {
 			throw new MoveException("Le pion n'est pas un coureur");
 		}
 		
-		// case d'arrivée vide
-		if( getPlateau().isCaseEmpty(wish) == false ) {
-			throw new MoveException("Case d'arrivée déjà occupée");
+		// case d'arrivÃ©e vide
+		if( etat.zePlateau.isCaseEmpty(wish) == false ) {
+			throw new MoveException("Case d'arrivÃ©e dÃ©jÃ  occupÃ©e");
 		}
 		
-		// bouge pièce
-		getPlateau().setCase(origin, null);
-		getPlateau().setCase(wish, pion);
-		return true;
+		// bouge piÃ¨ce
+		etat.zePlateau.setCase(origin, null);
+		etat.zePlateau.setCase(wish, pion);
+		//return etat;
 	}
-	public boolean fairePasse( int joueur, PositionGrid2D origin, PositionGrid2D wish )
+	/**
+	 * ATTENTION : l'EtatJeu est modifiÃ©.
+	 * TODO : faire qu'on applique un Coup/Mouvement Ã  un EtatJeu, avec potentiellement
+	 *        un skelette de coup qui soit dÃ©terminÃ© par le jeu (comme ds Shazamm ???)
+	 * @param etat
+	 * @param joueur
+	 * @param origin
+	 * @param wish
+	 * @return
+	 * @throws MoveException
+	 */
+	public void fairePasse( EtatJeu etat, int joueur, PositionGrid2D origin, PositionGrid2D wish )
 		throws MoveException
 	{
-		Joueur player = getJoueur(joueur);
+		//EtatJeu etat = new EtatJeu( etat );
+		Joueur player = etat.zeJoueurs[joueur];
 		
-		// il existe un pion passeur dans la case de départ
-		Piece pionStart = getPlateau().getCase(origin);
+		// il existe un pion passeur dans la case de dÃ©part
+		Piece pionStart = etat.zePlateau.getCase(origin);
 		if( pionStart == null ) {
 			throw new MoveException("Pas de pion pour passer");
 		}
 		if( pionStart.m_joueur.sameColor(player) == false ) {
-			throw new MoveException("Pion de départ n'est pas de la bonne couleur");
+			throw new MoveException("Pion de dÃ©part n'est pas de la bonne couleur");
 		}
 		if( pionStart.type != Piece.passeur) {
-			throw new MoveException("Le pion de départ n'est pas un passeur");
+			throw new MoveException("Le pion de dÃ©part n'est pas un passeur");
 		}
 		
-		// il existe un pion coureur dans la case d'arrivée
-		Piece pionEnd = getPlateau().getCase(wish);
+		// il existe un pion coureur dans la case d'arrivï¿½e
+		Piece pionEnd = etat.zePlateau.getCase(wish);
 		if( pionEnd == null ) {
-			throw new MoveException("Pas de pion pour réceptionner");
+			throw new MoveException("Pas de pion pour rÃ©ceptionner");
 		}
 		if( pionEnd.m_joueur.sameColor(player) == false ) {
-			throw new MoveException("Pion d'arrivée n'est pas de la bonne couleur");
+			throw new MoveException("Pion d'arrivÃ©e n'est pas de la bonne couleur");
 		}
 		if( pionEnd.type != Piece.coureur) {
-			throw new MoveException("Le pion d'arrivée n'est pas un coureur");
+			throw new MoveException("Le pion d'arrivÃ©e n'est pas un coureur");
 		}
 		
 		//pionStart.type = Piece.coureur;
-		getPlateau().setCase(origin, pionEnd);
+		etat.zePlateau.setCase(origin, pionEnd);
 		//pionEnd.type = Piece.passeur;
-		getPlateau().setCase(wish, pionStart);
-		return true;
+		etat.zePlateau.setCase(wish, pionStart);
+		//return etat;
 	}
 	
 	/**
-	 * Prendre une Piece d'un Joueur pour la poser sur le Plateau
+	 * Prendre une Piece d'un Player pour la poser sur le Plateau
 	 * @param joueur
 	 * @param type de la Piece
 	 * @param pos sur le Plateau
