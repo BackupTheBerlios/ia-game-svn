@@ -29,9 +29,33 @@ public class PositionGrid2D {
 	{
 		extract(representation);
 	}
-	
-	
-	public void setPosition( PositionGrid2D other )
+	public PositionGrid2D( PositionGrid2D other)
+    {
+	    this.x = other.x;
+        this.y = other.y;
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final PositionGrid2D other = (PositionGrid2D) obj;
+        if (x != other.x)
+            return false;
+        if (y != other.y)
+            return false;
+        return true;
+    }
+    public void setPosition( PositionGrid2D other )
 	{
 		this.x = other.x;
 		this.y = other.y;
@@ -74,6 +98,10 @@ public class PositionGrid2D {
 		return HERE;
 	}
 	
+    public int hammingDistance( PositionGrid2D other)
+    {
+        return Math.abs(x-other.x)+Math.abs(y-other.y);
+    }
 	
 	public String toString()
 	{

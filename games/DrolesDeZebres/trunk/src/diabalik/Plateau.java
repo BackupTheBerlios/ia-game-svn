@@ -108,6 +108,11 @@ public class Plateau extends Observable
 		return strbuf.toString();
 	}
 	
+    public boolean isValidPosition( PositionGrid2D pos)
+    {
+        return (pos.x >= 0) && (pos.x < Plateau.tailleC) && (pos.y >= 0) && (pos.y < Plateau.tailleL);
+    }
+    
 	/**
 	 * 
 	 * @param ligne d'une case

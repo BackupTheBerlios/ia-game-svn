@@ -30,7 +30,10 @@ implements Observer
 	
 	void build()
 	{
-		super.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        setLineWrap(true);
+        setEditable(false);
+		setFont(new Font("Monospaced", Font.PLAIN, 12));
+        setColumns(30);
 	}
 	
 	public void update(Observable o, Object arg)

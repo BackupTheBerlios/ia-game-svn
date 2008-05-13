@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import game.GameException;
 import game.gui.JGame;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -28,12 +29,40 @@ public class TestJEtatJeu {
 	 */
 	public TestJEtatJeu()
 	{
+        
 		game = new Jeu();
 		window = new JFrame( "TestJEtatJeu");
 		window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		window.setVisible(true);
+		
 	}
-	
+	public void runFile()
+	{
+        guiGame = new JGame( game );
+        game.getState().notifyObservers();
+        window.getContentPane().add(guiGame);
+        //window.pack();
+        window.setSize(420, 400);
+        window.setVisible(true);
+        
+	    try {
+	        game.applyMoves("share/essai.dbk");
+	        System.out.println( "Après lecture fichier\n"+game.displayStr() );
+            game.notifyObservers();
+	        
+	    } catch (GameException e) {
+	        System.err.println("ApplyMoves : " + e.getMessage());
+	        System.out.println( game.displayStr() );
+	        fail("GameException");
+	    } catch (IOException e) {
+	        System.err.println("ApplyMoves : " + e.getMessage());
+	        System.out.println( game.displayStr() );
+	        fail("IOException");
+        }
+	    System.out.println(">>>>> Historique");
+	    System.out.println(game.getHistorique());
+	    System.out.println("<<<<< Historique");
+    }
+    
 	public void run()
 	{
 		
@@ -41,6 +70,9 @@ public class TestJEtatJeu {
 		game.getState().notifyObservers();
 		window.getContentPane().add(guiGame);
 		window.pack();
+        window.setSize(420, 400);
+        window.setVisible(true);
+        //System.out.println("ViewPort = " + guiGame.guiHistory.histoList.getPreferredScrollableViewportSize().toString());
 		
 		Scanner keyboard = new Scanner(System.in);
 		int reponse;
@@ -53,7 +85,8 @@ public class TestJEtatJeu {
 		try {
 			game.applyMove(mvt);
 			game.getState().notifyObservers();
-		} catch (GameException e) {
+           // System.out.println("ViewPort = " + guiGame.guiHistory.histoList.getPreferredScrollableViewportSize().toString());
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();
@@ -67,7 +100,7 @@ public class TestJEtatJeu {
 		try {
 			game.applyMove(mvt);
 			game.getState().notifyObservers();
-		} catch (GameException e) {
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();
@@ -81,7 +114,10 @@ public class TestJEtatJeu {
 		try {
 			game.applyMove(mvt);
 			game.getState().notifyObservers();
-		} catch (GameException e) {
+            //System.out.println("ViewPort = " + guiGame.guiHistory.histoList.getPreferredScrollableViewportSize().toString());
+            //guiGame.guiHistory.revalidate();
+            //System.out.println("Revalidated ViewPort = " + guiGame.guiHistory.histoList.getPreferredScrollableViewportSize().toString());
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();
@@ -91,6 +127,6 @@ public class TestJEtatJeu {
 	public static void main(String[] args)
 	{
 		TestJEtatJeu myTest = new TestJEtatJeu();
-		myTest.run();
+		myTest.runFile();
 	}
 }

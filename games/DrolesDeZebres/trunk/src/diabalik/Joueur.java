@@ -20,7 +20,11 @@ public class Joueur implements game.Player {
 	public final static String type_nul = "-";
 	
 	public int couleur;
-	
+    /** nb de 'Piece' formant une ligne de blocage */
+	public int nbBloqueur;
+    /** nb de 'Piece' au contact des 'Pieces' adverses. */
+    public int nbContact;
+    
 	
 	/**
 	 * Player vide sans couleur.
@@ -28,6 +32,8 @@ public class Joueur implements game.Player {
 	public Joueur()
 	{
 	    couleur = -1;
+        nbBloqueur = 0;
+        nbContact = 0;
 	}
 	/**
 	 * Copie d'un autre Player.
@@ -36,8 +42,12 @@ public class Joueur implements game.Player {
 	public Joueur( Joueur zeJoueur )
 	{
 	    couleur = zeJoueur.couleur;
+        nbBloqueur = zeJoueur.nbBloqueur;
+        nbContact = zeJoueur.nbContact;
 	}
-	/* (non-Javadoc)
+	/**
+     * Only test 'couleur'.
+     * 
 	 * @see diabalik.IJoueur#equals(java.lang.Object)
 	 */
     public boolean equals(Object obj)
@@ -73,8 +83,12 @@ public class Joueur implements game.Player {
 	{
 	    return toString( couleur );
 	}
+    public String debugString()
+    {
+        return new String( toString(couleur) + " : " + nbBloqueur + "/" + nbContact);
+    }
 	/**
-	 * Crï¿½e un String a partir d'un indice de couleur.
+	 * Crée un String à partir d'un indice de couleur.
 	 * @param couleur
 	 * @return 
 	 */
@@ -88,7 +102,7 @@ public class Joueur implements game.Player {
 	    }
 	}
 	/**
-	 * Dï¿½code un indice de couleur ï¿½ partir d'un String.
+	 * Décode un indice de couleur à partir d'un String.
 	 * @param token
 	 * @return
 	 */

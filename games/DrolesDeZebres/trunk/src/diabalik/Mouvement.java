@@ -6,7 +6,10 @@
  */
 package diabalik;
 
+import game.GameException;
+
 import java.util.StringTokenizer;
+
 
 /**
  * Un Mouvement doit permettre de refaire automatiquement le dernier coup.
@@ -52,8 +55,33 @@ public class Mouvement {
 	{
 	    init();
 	}
+  
     /**
-     * @return true si les membres sont les mï¿½mes
+     * Applique le Mouvement au jeu.
+     * @param p_jeu
+     */
+    public void apply( EtatJeu etat )
+    throws GameException, MoveException
+    {
+        etat.setLastMove( this );
+        if( etat.isValid() == false ) {
+            throw new GameException( "EtatJeu non valide");
+        }
+        if( this.zeJoueur == null ) {
+            throw new GameException( "Pas de Player : " + toString());
+        }
+        if( etat.getTurn() < 0 ) {
+            // set first joueur
+            etat.setTurn( this.zeJoueur.couleur );
+        }
+        if( this.zeJoueur.couleur != etat.getTurn() ) {
+            throw new GameException( "Mauvais joueur : c'est au tour de " + Joueur.toString(etat.getTurn()) + " de jouer : " + toString());    
+        }
+        // local move
+    }
+    
+    /**
+     * @return true si les membres sont les mêmes
      */
     public boolean equals(Object obj)
     {
@@ -104,7 +132,7 @@ public class Mouvement {
 	 * @param buff contient la descritpion du Mouvement
 	 * @param zeJeu le jeu associï¿½
 	 */
-	public void extractFrom( String buff , Jeu zeJeu)
+	private void extractFrom( String buff , Jeu zeJeu)
 	{
 	    StringTokenizer st = new StringTokenizer( buff, ":(,)+ \t\n\r\f");
 	    String token;

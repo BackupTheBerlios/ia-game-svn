@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 public class Historique extends Observable
-// TODO make adapter ????
 {
 	Jeu zeJeu;
 	ArrayList<EtatJeu> hist;
@@ -48,13 +47,17 @@ public class Historique extends Observable
 	    int nbLu = 0;
 	    while(lineRead != null) {
 	        nbLu ++;
+            System.out.println("Reading line "+ nbLu);
 	        try {
-	            mvtRead.extractFrom( lineRead, zeJeu);
+                mvtRead = Jeu.zeMoveFactory.extractFrom(lineRead);
+	            //mvtRead.extractFrom( lineRead, zeJeu);
+                //System.out.println("applying "+ mvtRead.toString());
 	            zeJeu.applyMove( mvtRead, zeEtat );
 	        }
 	        catch (Exception e) {
 	            zeEtat.setValid( false );
 	            zeEtat.errMsg = e.getMessage();
+                //System.err.println(e.getMessage());
 	        }
 	        hist.add( new EtatJeu( zeEtat ));
 	        //System.out.println(  displayStr() );//debug
@@ -86,16 +89,17 @@ public class Historique extends Observable
 	    myFile.close();
 	}
 	
+    
 	/**
 	 * Alter Mouvement at currentPosition of the History.
 	 * @param newMove
 	 */
 	public void alterMove( int position, Mouvement newMove )
 	{
-		// récupérer l'EtatJeu à modifier
-	    EtatJeu zeEtat = hist.get( position );
+		// récupérer l'EtatJeu à modifier : c'est l'�tat pr�c�dent
+	    EtatJeu zeEtat = new EtatJeu(hist.get( position-1 ));
 	    // le rendre valide par défaut
-	    zeEtat.setValid( true );
+	    //zeEtat.setValid( true );
 	    //System.out.println( "Apply "+mvt.toString()+" to \n" + zeEtat.toString());
 	    try {
 	    	zeJeu.applyMove( newMove, zeEtat );
@@ -122,9 +126,10 @@ public class Historique extends Observable
 	void validate( int position )
 	{
 		for( int i=position+1; i < hist.size(); i++ ) {
-	        EtatJeu zeEtat = hist.get( i );
+            Mouvement move = hist.get(i).getLastMove();
+	        EtatJeu zeEtat = new EtatJeu(hist.get( i-1 ));
 	        try {
-	            zeJeu.applyMove( zeEtat.getLastMove(), zeEtat );
+	            zeJeu.applyMove( move, zeEtat );
 	        }
 	        catch (Exception e) {
 	            zeEtat.setValid( false );

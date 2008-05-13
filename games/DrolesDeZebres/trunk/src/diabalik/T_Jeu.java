@@ -1,7 +1,6 @@
 package diabalik;
 
-import static org.junit.Assert.fail;
-
+import static org.junit.Assert.*;
 import game.GameException;
 
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class T_Jeu {
 		System.out.println("Apply : " + mvt.toString());
 		try {
 			game.applyMove(mvt);
-		} catch (GameException e) {
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();
@@ -73,7 +72,7 @@ public class T_Jeu {
 		System.out.println("Apply : " + mvt.toString());
 		try {
 			game.applyMove(mvt);
-		} catch (GameException e) {
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();
@@ -83,7 +82,7 @@ public class T_Jeu {
 		System.out.println("Apply : " + mvt.toString());
 		try {
 			game.applyMove(mvt);
-		} catch (GameException e) {
+		} catch (Exception e) {
 			System.out.println( e.getMessage() );
             System.out.println( game.displayStr() );
             fail();

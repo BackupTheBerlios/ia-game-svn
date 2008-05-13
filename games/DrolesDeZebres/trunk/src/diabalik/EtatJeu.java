@@ -6,27 +6,28 @@
  */
 package diabalik;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 
 /**
- * Rassemble toutes les donnï¿½es du Jeu. Fait essentiellement pour ï¿½tre 
- * "lï¿½ger" et ne pas prendre trop de place en mï¿½moire.
+ * Rassemble toutes les données du Jeu. Fait essentiellement pour être 
+ * "léger" et ne pas prendre trop de place en mémoire.
  * @author dutech
  */
 public class EtatJeu extends Observable 
 {
     public Plateau zePlateau;
 	public Joueur[] zeJoueurs;
-	private Mouvement dernierMvt;
+	private Mouvement lastMvt;
 	private int tour;
 	private int nbMvtLeft;
-	private boolean finJeu;
-	public ArrayList<Mouvement> bestMoves; // meilleurs Mvt ï¿½ faire
+	private int winner;
 	private boolean valide;
 	public String errMsg;
-	
+    
+    // Divers
+//  public ArrayList<Mouvement> bestMoves; // meilleurs Mvt ï¿½ faire
+    
 	/**
 	 * Le premier Player est Ã  spÃ©cifier.
 	 * Attention, les Joueurs ne sont pas crÃ©Ã©s!
@@ -35,14 +36,14 @@ public class EtatJeu extends Observable
 	public EtatJeu()
 	{
 	    zePlateau = new Plateau();
-		dernierMvt = new Mouvement();
+		lastMvt = new Mouvement();
 		tour = -1;
 		nbMvtLeft = 3;
-		finJeu = false;
+		winner = -1;
 		
 		zeJoueurs = null;
-		bestMoves = new ArrayList<Mouvement>();
-		
+		//bestMoves = new ArrayList<Mouvement>();
+ 
 		valide = true;
 		errMsg = null;
 		
@@ -50,30 +51,35 @@ public class EtatJeu extends Observable
 	}
 	public EtatJeu( EtatJeu zeEtat) 
 	{
-	    zePlateau = new Plateau( zeEtat.zePlateau);
-	    dernierMvt = new Mouvement ( zeEtat.dernierMvt);
-	    tour = zeEtat.tour;
-	    nbMvtLeft = zeEtat.nbMvtLeft;
-	    finJeu = zeEtat.finJeu;
-	    
-	    if( zeEtat.zeJoueurs != null ) {
-	        zeJoueurs = new Joueur[zeEtat.zeJoueurs.length];
-	        for( int i=0; i < zeEtat.zeJoueurs.length; i++ ) {
-	            zeJoueurs[i] = new Joueur( zeEtat.zeJoueurs[i]);
-	        }
-	    }
-	    
-	    bestMoves = new ArrayList<Mouvement>( zeEtat.bestMoves );
-	    
-	    valide = zeEtat.valide;
-	    if( zeEtat.errMsg != null ) {
-	        errMsg = new String(zeEtat.errMsg);
-	    }
-	    else {
-	        errMsg = null;
-	    }
-	    super.setChanged();
+        copy( zeEtat );
 	}
+    public void copy( EtatJeu etat)
+    {
+        zePlateau = new Plateau( etat.zePlateau);
+        lastMvt = new Mouvement ( etat.lastMvt);
+        tour = etat.tour;
+        nbMvtLeft = etat.nbMvtLeft;
+        winner = etat.winner;
+        
+        if( etat.zeJoueurs != null ) {
+            zeJoueurs = new Joueur[etat.zeJoueurs.length];
+            for( int i=0; i < etat.zeJoueurs.length; i++ ) {
+                zeJoueurs[i] = new Joueur( etat.zeJoueurs[i]);
+            }
+            
+        }
+        
+        //bestMoves = new ArrayList<Mouvement>( etat.bestMoves );
+        
+        valide = etat.valide;
+        if( etat.errMsg != null ) {
+            errMsg = new String(etat.errMsg);
+        }
+        else {
+            errMsg = null;
+        }
+        super.setChanged();
+    }
 	
 	/**
 	 * Tout est remis ï¿½ zï¿½ro (sauf les Joueurs).
@@ -81,13 +87,13 @@ public class EtatJeu extends Observable
 	public void reset()
 	{
 	    zePlateau = new Plateau();
-		dernierMvt = new Mouvement();
+		lastMvt = new Mouvement();
 		
 		tour = -1;
 		nbMvtLeft = 3;
-		finJeu = false;
+		winner = -1;
 		
-		bestMoves = new ArrayList<Mouvement>();
+		//bestMoves = new ArrayList<Mouvement>();
 		
 		valide = true;
 		errMsg = null;
@@ -111,7 +117,7 @@ public class EtatJeu extends Observable
             }
             boolean result = (tour == etat.tour) 
             	&& (nbMvtLeft == etat.nbMvtLeft)
-                && (finJeu == etat.finJeu);
+                && (winner == winner);
             if( zePlateau == null ) {
                 if( etat.zePlateau != null ) return false;
             }
@@ -134,21 +140,21 @@ public class EtatJeu extends Observable
         }
         return false;
     }
-	public String displayBestMoves()
-	{
-	    StringBuffer strbuf = new StringBuffer();
-	    strbuf.append( "best = {");
-	    for (Mouvement tmpMvt : bestMoves) {
-            strbuf.append( tmpMvt.toString()+"; ");
-        }
-	    strbuf.append( "}\n");
-	    return strbuf.toString();
-	}
+//	public String displayBestMoves()
+//	{
+//	    StringBuffer strbuf = new StringBuffer();
+//	    strbuf.append( "best = {");
+//	    for (Mouvement tmpMvt : bestMoves) {
+//            strbuf.append( tmpMvt.toString()+"; ");
+//        }
+//	    strbuf.append( "}\n");
+//	    return strbuf.toString();
+//	}
 	
     public String toString()
     {
         StringBuffer strbuf = new StringBuffer();
-        strbuf.append( dernierMvt.toString());
+        strbuf.append( lastMvt.toString());
         strbuf.append("\n");
         if( tour >= 0 ) {
             strbuf.append( " ["+zeJoueurs[tour].toString()+ " doit jouer]");
@@ -166,6 +172,11 @@ public class EtatJeu extends Observable
 		
 		//strbuf.append( "derJ = " + dernierMvt.zeJoueur.couleur + " "+ dernierMvt.zeJoueur.displayReserve()+"\n"); // debug
 		
+        //strbuf.append("Bloquant ? \n");
+        for (Joueur player : zeJoueurs) {
+            strbuf.append(player.debugString()+"\n");
+        }
+        
         return strbuf.toString();
     }
 	/** (non-Javadoc)
@@ -189,11 +200,11 @@ public class EtatJeu extends Observable
 	}
 	public Mouvement getLastMove()
 	{
-		return dernierMvt;
+		return lastMvt;
 	}
 	public void setLastMove( Mouvement mvt)
 	{
-		dernierMvt = mvt;
+		lastMvt = mvt;
 		super.setChanged();
 	}
 	public int getTurn()
@@ -224,5 +235,12 @@ public class EtatJeu extends Observable
 		super.setChanged();
 	}
 	
-    
+    public void setWinner(int couleur)
+    {
+        winner = couleur;
+    }
+    public boolean isEndGame()
+    {
+        return winner >= 0;
+    }
 }

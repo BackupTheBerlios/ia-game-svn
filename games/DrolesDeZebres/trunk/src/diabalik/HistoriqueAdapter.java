@@ -1,9 +1,14 @@
 package diabalik;
 
+import game.ExtractException;
+
+import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractListModel;
+
+import utils.MutableListModel;
 
 /**
  * Make the link between an Historique and a JList by beeing
@@ -11,9 +16,10 @@ import javax.swing.AbstractListModel;
  * @author alain
  *
  */
-public class HistoriqueAdapter extends AbstractListModel implements Observer
+public class HistoriqueAdapter extends AbstractListModel
+implements Observer, MutableListModel
 {
-
+    DecimalFormat formater = new DecimalFormat("###");
 	/**
 	 * 
 	 */
@@ -56,8 +62,8 @@ public class HistoriqueAdapter extends AbstractListModel implements Observer
 	public Object getElementAt(int index)
 	{
 		EtatJeu state = histo.getState(index);
+		//return new String(formater.format(index) + " " + state.getLastMove().toString());
 		return state.getLastMove().toString();
-		
 	}
 	/**
 	 * @see AbstractListModel
@@ -66,5 +72,29 @@ public class HistoriqueAdapter extends AbstractListModel implements Observer
 	{
 		return histo.hist.size();
 	}
+
+    public boolean isCellEditable(int index)
+    {
+        return true;
+    }
+
+    public void setValueAt(Object value, int index)
+    {
+        if (value instanceof String) {
+            String valueStr = (String) value;
+            Mouvement move;
+            try {
+                move = Jeu.zeMoveFactory.extractFrom(valueStr);
+                histo.alterMove(index, move);
+                System.out.println("HistoriqueAdapter : changed value at " + index);
+            } catch (ExtractException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else {
+            System.err.println("HistoriqueAdapter : how to edit a "+ value.getClass().getName());
+        }
+    }
 
 }

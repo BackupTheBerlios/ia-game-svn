@@ -1,11 +1,12 @@
 package game.gui;
 
-import java.awt.Dimension;
-
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import utils.DefaultListCellEditor;
+import utils.JListMutable;
 import diabalik.Historique;
 import diabalik.HistoriqueAdapter;
 
@@ -17,7 +18,7 @@ public class JGameHistory extends JScrollPane
 	private static final long serialVersionUID = 1L;
 
 	Historique histo;
-	JList histoList;
+	public JListMutable histoList;
 
 	public JGameHistory(Historique histo )
 	{
@@ -30,12 +31,13 @@ public class JGameHistory extends JScrollPane
 
 	void build()
 	{
-		histoList = new JList( new HistoriqueAdapter(histo));
-		histoList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		histoList = new JListMutable( new HistoriqueAdapter(histo));
+        histoList.setListCellEditor( new DefaultListCellEditor(new JTextField()));
+		histoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		histoList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		histoList.setVisibleRowCount(-1);
+		histoList.setVisibleRowCount(8);
 		
-		this.getViewport().setView( histoList );
-		this.setPreferredSize(new Dimension(100, -1));
+		getViewport().setView( histoList );
+		//setPreferredSize(new Dimension(100, -1));
 	}
 }
