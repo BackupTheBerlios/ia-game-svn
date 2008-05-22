@@ -70,15 +70,15 @@ public class PasserMove extends Mouvement {
         }
         
         if( posDebut.isAligned(posFin) == false) {
-            throw new MoveException("Les cases ne sont pas alignées");
+            throw new MoveException("Les cases ne sont pas alignï¿½es");
         }
         PositionGrid2D dir = posDebut.getDirectionTo(posFin);
         PositionGrid2D place = posDebut.add(dir);
         while( place.equals(posFin) == false ) {
             if( etat.zePlateau.getCase(place) != null ) {
                 if( etat.zePlateau.getCase(place).m_joueur.sameColor(zeJoueur) == false) {
-                    System.err.println("case intermédiaire : "+place.toString() + " posFin : "+ posFin.toString());
-                    throw new MoveException("Case intermédiaire pas libre");
+                    System.err.println("case intermï¿½diaire : "+place.toString() + " posFin : "+ posFin.toString());
+                    throw new MoveException("Case intermï¿½diaire pas libre");
                 }
             }
             place = place.add(dir);
@@ -106,10 +106,10 @@ public class PasserMove extends Mouvement {
      */
 	private boolean isVictory(PositionGrid2D passEnding, Joueur joueur)
     {
-        if ((joueur.couleur == Joueur.jaune) && (passEnding.y == 0)) {
+        if ((joueur.couleur == Joueur.rouge) && (passEnding.y == 0)) {
             return true;
         }
-        else if ((joueur.couleur == Joueur.rouge) && (passEnding.y == Plateau.tailleL-1)) {
+        else if ((joueur.couleur == Joueur.jaune) && (passEnding.y == Plateau.tailleL-1)) {
             return true;
         }
         return false;

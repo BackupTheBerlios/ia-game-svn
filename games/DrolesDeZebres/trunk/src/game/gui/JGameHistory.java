@@ -34,8 +34,8 @@ public class JGameHistory extends JScrollPane
 		histoList = new JListMutable( new HistoriqueAdapter(histo));
         histoList.setListCellEditor( new DefaultListCellEditor(new JTextField()));
 		histoList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		histoList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		histoList.setVisibleRowCount(8);
+		histoList.setLayoutOrientation(JList.VERTICAL);
+		histoList.setVisibleRowCount(20);
 		
 		getViewport().setView( histoList );
 		//setPreferredSize(new Dimension(100, -1));

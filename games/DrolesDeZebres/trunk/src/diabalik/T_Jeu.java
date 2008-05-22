@@ -1,6 +1,6 @@
 package diabalik;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 import game.GameException;
 
 import java.io.IOException;

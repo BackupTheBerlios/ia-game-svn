@@ -17,7 +17,7 @@ import diabalik.PositionGrid2D;
 
 
 /**
- * Deplacer essaie de déplacer un 'coureur' vers une case 'voisine' libre.
+ * Deplacer essaie de dï¿½placer un 'coureur' vers une case 'voisine' libre.
  *
  * @author dutech
  */
@@ -47,10 +47,10 @@ public class DeplacerMove extends Mouvement {
         
         // local move
         
-        // il existe un pion coureur dans la case de départ
+        // il existe un pion coureur dans la case de dï¿½part
         Piece pion = etat.zePlateau.getCase(posDebut);
         if( pion == null ) {
-            throw new MoveException("Pas de pion à déplacer");
+            throw new MoveException("Pas de pion ï¿½ dï¿½placer");
         }
         if( pion.m_joueur.sameColor(zeJoueur) == false ) {
             throw new MoveException("Pion pas de la bonne couleur");
@@ -61,7 +61,7 @@ public class DeplacerMove extends Mouvement {
         
         // case d'arrivÃ©e vide
         if( etat.zePlateau.isCaseEmpty(posFin) == false ) {
-            throw new MoveException("Case d'arrivée déjà  occupée");
+            throw new MoveException("Case d'arrivï¿½e dï¿½jï¿½ occupï¿½e");
         }
         
         // pas une case voisine
@@ -70,7 +70,8 @@ public class DeplacerMove extends Mouvement {
         }
         
         // check blocking line
-        boolean blockBefore = checkBlocking(posDebut, etat);
+        boolean leftBefore = checkLinkedLeft(posDebut, etat);
+        boolean rightBefore = checkLinkedRight(posDebut, etat);
         boolean contactBefore = checkContact(posDebut, etat);
         
         // bouge piÃ¨ce
@@ -78,27 +79,47 @@ public class DeplacerMove extends Mouvement {
         etat.zePlateau.setCase(posFin, pion);
         
         // update new blocking state
-        if( blockBefore ) {
-            if( checkBlocking(posFin, etat) == false) {
+        if( leftBefore ) {
+            if( checkLinkedLeft(posFin, etat) == false) {
                 etat.zeJoueurs[zeJoueur.couleur].nbBloqueur -=1;
             }
         }
         else {
-            if( checkBlocking(posFin, etat) == true) {
+            if( checkLinkedLeft(posFin, etat) == true) {
                 etat.zeJoueurs[zeJoueur.couleur].nbBloqueur +=1;
             }
         }
+        if( rightBefore ) {
+            if( checkLinkedRight(posFin, etat) == false) {
+                etat.zeJoueurs[zeJoueur.couleur].nbBloqueur -=1;
+            }
+        }
+        else {
+            if( checkLinkedRight(posFin, etat) == true) {
+                etat.zeJoueurs[zeJoueur.couleur].nbBloqueur +=1;
+            }
+        }
+        
         if( contactBefore ) {
             if( checkContact(posFin, etat) == false ) {
                 etat.zeJoueurs[zeJoueur.couleur].nbContact -=1;
+                etat.zeJoueurs[Joueur.otherColor(zeJoueur.couleur)].nbContact -=1;
             }
         }
         else {
             if( checkContact(posFin, etat) == true ) {
                 etat.zeJoueurs[zeJoueur.couleur].nbContact +=1;
+                etat.zeJoueurs[Joueur.otherColor(zeJoueur.couleur)].nbContact +=1;
             }
         }
         //return etat;
+        // joueur courant gagne si il est contact avec une ligne blocante
+        for (Joueur player : etat.zeJoueurs) {
+			if( (etat.zeJoueurs[player.couleur].nbContact >= 3 ) 
+				&& (etat.zeJoueurs[Joueur.otherColor(player.couleur)].nbBloqueur == Plateau.tailleC)) {
+				etat.setWinner(player.couleur);
+			}
+		}
         
         // nbMoveLeft -- a inclure dans les sous-classes
         etat.setNbMvtLeft(etat.getNbMvtLeft()-1);
@@ -122,67 +143,46 @@ public class DeplacerMove extends Mouvement {
         }
         return true;
     }
-	/**
-     * Check if a position is a blocking position.
-     * @param pos
-     * @param etat
-     * @return
-	 */
-    boolean checkBlocking(PositionGrid2D pos, EtatJeu etat)
+    boolean checkLinkedLeft(PositionGrid2D pos, EtatJeu etat)
     {
-        // si pote devant ou derrière : non bloquant
-        if( pos.y < Plateau.tailleL-1 ) {
-            if( etat.zePlateau.isCaseEmpty(pos.add(PositionGrid2D.UP)) == false) {
-                if( etat.zePlateau.getCase(pos.add(PositionGrid2D.UP)).m_joueur.sameColor(zeJoueur)) {
-                    return false;
-                }
-            }
-        }
-        if( pos.y > 0 ) {
-            if( etat.zePlateau.isCaseEmpty(pos.add(PositionGrid2D.DOWN)) == false) {
-                if( etat.zePlateau.getCase(pos.add(PositionGrid2D.DOWN)).m_joueur.sameColor(zeJoueur)) {
-                    return false;
-                }
-            }
-        }
-        // sinon, pote à droite et à gauche?
-        boolean left = false;
-        if( pos.x > 0 ) {
+    	if( pos.x > 0 ) {
             for (PositionGrid2D dir : leftSide) {
                 PositionGrid2D checkPos = pos.add(dir);
                 if( etat.zePlateau.isValidPosition(checkPos)) {
                     if( etat.zePlateau.isCaseEmpty(checkPos) == false) {
                         if( etat.zePlateau.getCase(checkPos).m_joueur.sameColor(zeJoueur)) {
-                            left = true;
+                            return true;
                         }
                     }
                 }
             }
         }
         else {
-            left = true;
+            return true;
         }
-        if( left == false ) {
-            return false;
-        }
-        boolean right = false;
+        return false;
+    }
+    boolean checkLinkedRight( PositionGrid2D pos, EtatJeu etat )
+    {
+
         if( pos.x < Plateau.tailleC-1 ) {
             for (PositionGrid2D dir : rightSide) {
                 PositionGrid2D checkPos = pos.add(dir);
                 if( etat.zePlateau.isValidPosition(checkPos)) {
                     if( etat.zePlateau.isCaseEmpty(checkPos) == false) {
                         if( etat.zePlateau.getCase(checkPos).m_joueur.sameColor(zeJoueur)) {
-                            right = true;
+                            return true;
                         }
                     }
                 }
             }
         }
         else {
-            right = true;
+            return true;
         }
-        return right;
+        return false;
     }
+	
     /**
      * Check for contact UP or DOWN according to zeJoueur.couleur.
      * @param pos
@@ -191,8 +191,8 @@ public class DeplacerMove extends Mouvement {
      */
     boolean checkContact(PositionGrid2D pos, EtatJeu etat )
     {
-        // suivant couleur, si ennemi devant ou derrière
-        if( zeJoueur.couleur == Joueur.jaune ) {
+        // suivant couleur, si ennemi devant ou derriï¿½re
+        if( zeJoueur.couleur == Joueur.rouge ) {
             // check DOWN
             if( pos.y > 0 ) {
                 if( etat.zePlateau.isCaseEmpty(pos.add(PositionGrid2D.DOWN)) == false) {

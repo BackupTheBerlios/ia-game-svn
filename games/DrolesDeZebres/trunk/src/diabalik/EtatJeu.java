@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Observable;
 
 /**
- * Rassemble toutes les données du Jeu. Fait essentiellement pour être 
- * "léger" et ne pas prendre trop de place en mémoire.
+ * Rassemble toutes les donnï¿½es du Jeu. Fait essentiellement pour ï¿½tre 
+ * "lï¿½ger" et ne pas prendre trop de place en mï¿½moire.
  * @author dutech
  */
 public class EtatJeu extends Observable 
@@ -176,6 +176,12 @@ public class EtatJeu extends Observable
         for (Joueur player : zeJoueurs) {
             strbuf.append(player.debugString()+"\n");
         }
+        if( winner < 0 ) {
+        	strbuf.append( "No Winner\n");
+        }
+        else {
+        	strbuf.append( "Winner = "+Joueur.toString(winner));
+        }
         
         return strbuf.toString();
     }
@@ -238,6 +244,10 @@ public class EtatJeu extends Observable
     public void setWinner(int couleur)
     {
         winner = couleur;
+    }
+    public int getWinner()
+    {
+    	return winner;
     }
     public boolean isEndGame()
     {

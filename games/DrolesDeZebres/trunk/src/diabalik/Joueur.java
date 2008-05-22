@@ -88,7 +88,7 @@ public class Joueur implements game.Player {
         return new String( toString(couleur) + " : " + nbBloqueur + "/" + nbContact);
     }
 	/**
-	 * Crée un String à partir d'un indice de couleur.
+	 * Crï¿½e un String ï¿½ partir d'un indice de couleur.
 	 * @param couleur
 	 * @return 
 	 */
@@ -102,7 +102,7 @@ public class Joueur implements game.Player {
 	    }
 	}
 	/**
-	 * Décode un indice de couleur à partir d'un String.
+	 * Dï¿½code un indice de couleur ï¿½ partir d'un String.
 	 * @param token
 	 * @return
 	 */
@@ -112,6 +112,10 @@ public class Joueur implements game.Player {
 	        if( token.equals(type_str[i]) ) return i;
 	    }
 	    return -1;
+	}
+	public static int otherColor( int couleur )
+	{
+		return 1-couleur;
 	}
 
 }

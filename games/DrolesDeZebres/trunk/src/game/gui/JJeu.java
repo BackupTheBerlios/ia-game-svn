@@ -32,10 +32,10 @@ import org.eclipse.swt.widgets.Text;
 
 import diabalik.AlphaBeta;
 import diabalik.EtatJeu;
-import diabalik.GenerateurMouvement;
 import diabalik.Jeu;
 import diabalik.Joueur;
 import diabalik.Mouvement;
+import drolesDZ.GenerateurMouvement;
 /**
  * @author dutech
  */

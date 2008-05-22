@@ -8,8 +8,8 @@ package gui;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 import junit.framework.Assert;
+import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;

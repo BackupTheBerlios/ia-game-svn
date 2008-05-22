@@ -11,7 +11,12 @@ import game.GameException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import drolesDZ.*;
+import drolesDZ.GenerateurMouvement;
+import drolesDZ.Jeu;
+import drolesDZ.Joueur;
+import drolesDZ.Mouvement;
+import drolesDZ.Piece;
+import drolesDZ.Plateau;
 
 /**
  * @author dutech

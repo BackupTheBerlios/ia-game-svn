@@ -45,7 +45,7 @@ public class TestJEtatJeu {
         window.setVisible(true);
         
 	    try {
-	        game.applyMoves("share/essai.dbk");
+	        game.applyMoves("share/bruno0.dbk");
 	        System.out.println( "Après lecture fichier\n"+game.displayStr() );
             game.notifyObservers();
 	        

@@ -74,22 +74,22 @@ public class Jeu extends Observable
 		etat.zeJoueurs[Joueur.jaune] = zeJoueurFactory.create( Joueur.jaune );
 		etat.zeJoueurs[Joueur.rouge] = zeJoueurFactory.create( Joueur.rouge );
         for (Joueur player : etat.zeJoueurs) {
-            etat.zeJoueurs[player.couleur].nbBloqueur = 7;
+            etat.zeJoueurs[player.couleur].nbBloqueur = 8;
             etat.zeJoueurs[player.couleur].nbContact = 0;
         }
 		
 		Plateau board = etat.zePlateau;
 		for(int col = 0; col < 7; col ++) {
 			if( col != 3) {
-				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur ));
-				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur ));
+				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.coureur ));
+				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.coureur ));
 			}
 			else {
-				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur ));
-				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur ));
+				board.setCase( new PositionGrid2D(col,6), zePieceFactory.create( getJoueur(Joueur.rouge), Piece.passeur ));
+				board.setCase( new PositionGrid2D(col,0), zePieceFactory.create( getJoueur(Joueur.jaune), Piece.passeur ));
 			}
 		}
-		etat.setTurn( Joueur.rouge);
+		etat.setTurn( Joueur.jaune);
 		etat.setChanged();
 	}
 	
@@ -153,7 +153,17 @@ public class Jeu extends Observable
 //	{
 //	    zeEtat.finJeu = flag;
 //	}
-
+	public int getValue(EtatJeu etat, Joueur player)
+	{
+		if (etat.getWinner() == player.couleur ) {
+			return 5;
+		}
+		else if( etat.getWinner() == Joueur.otherColor(player.couleur)) {
+			return -5;
+		}
+		
+		return 0;
+	}
 	
 	/**
 	 * Ouvre un fichier et applique au jeu tous les Mouvements lus dans
