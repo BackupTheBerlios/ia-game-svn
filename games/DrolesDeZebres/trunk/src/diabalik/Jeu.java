@@ -31,6 +31,7 @@ public class Jeu extends Observable
 	static private JoueurFactory zeJoueurFactory;
     static public MoveFactory zeMoveFactory;
     static public MoveGenerator zeMoveGenerator;
+    static public HeuristicState zeHeuristicState;
 	
 	/**
 	 * Ca sera � 'rouge' de positionner Indiana.
@@ -40,7 +41,9 @@ public class Jeu extends Observable
 	    zePieceFactory = new PieceFactory();
 		zeJoueurFactory = new JoueurFactory();
         zeMoveFactory = new MoveFactory(this);
+        // TODO should belong to another class (ie Algorithm)
         zeMoveGenerator = new MoveGenerator();
+        zeHeuristicState = new HeuristicState(this);
 		
 		zeEtat = new EtatJeu();
 		zeHistorique = new Historique( this );

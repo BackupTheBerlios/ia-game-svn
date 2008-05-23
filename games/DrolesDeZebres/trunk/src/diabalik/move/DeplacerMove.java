@@ -122,9 +122,10 @@ public class DeplacerMove extends Mouvement {
 		}
         
         // nbMoveLeft -- a inclure dans les sous-classes
-        etat.setNbMvtLeft(etat.getNbMvtLeft()-1);
-        if( etat.getNbMvtLeft() == 0 ) {
-            etat.setNbMvtLeft(3);
+        etat.setNbDepLeft(etat.getNbDepLeft()-1);
+        if( (etat.getNbDepLeft()+etat.getNbPassLeft()) == 0 ) {
+            etat.setNbDepLeft(2);
+            etat.setNbPassLeft(1);
             etat.setTurn( (etat.getTurn() + 1) % 2 );
         }
     }

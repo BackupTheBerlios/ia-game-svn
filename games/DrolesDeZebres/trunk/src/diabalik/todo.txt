@@ -1,0 +1,12 @@
+- solveur
+	* cadre en bas de page avec Solveur.
+	- gérer les lignes qui bloquent
+	* mettre la résolution dans un Thread
+	* estimation du nb de cas restant à traiter
+- generateur
+	- ne pas générer de mouvement sur un état gagnant
+- mode batch
+- historique
+	- ajouter des mouvements en appuyant sur INS
+	- numéroter les lignes dans l'historique (Table ?)
+- ressortir les instances et les superclasses

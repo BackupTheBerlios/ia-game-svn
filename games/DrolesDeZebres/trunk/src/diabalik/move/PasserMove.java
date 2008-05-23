@@ -70,15 +70,15 @@ public class PasserMove extends Mouvement {
         }
         
         if( posDebut.isAligned(posFin) == false) {
-            throw new MoveException("Les cases ne sont pas align�es");
+            throw new MoveException("Les cases ne sont pas alignées");
         }
         PositionGrid2D dir = posDebut.getDirectionTo(posFin);
         PositionGrid2D place = posDebut.add(dir);
         while( place.equals(posFin) == false ) {
             if( etat.zePlateau.getCase(place) != null ) {
                 if( etat.zePlateau.getCase(place).m_joueur.sameColor(zeJoueur) == false) {
-                    System.err.println("case interm�diaire : "+place.toString() + " posFin : "+ posFin.toString());
-                    throw new MoveException("Case interm�diaire pas libre");
+                    //System.err.println("case intermédiaire : "+place.toString() + " posFin : "+ posFin.toString());
+                    throw new MoveException("Case intermédiaire pas libre");
                 }
             }
             place = place.add(dir);
@@ -94,9 +94,10 @@ public class PasserMove extends Mouvement {
         //return etat;
         
         // nbMoveLeft -- a inclure dans les sous-classes
-        etat.setNbMvtLeft(etat.getNbMvtLeft()-1);
-        if( etat.getNbMvtLeft() == 0 ) {
-            etat.setNbMvtLeft(3);
+        etat.setNbPassLeft(etat.getNbPassLeft()-1);
+        if( (etat.getNbDepLeft()+etat.getNbPassLeft()) == 0 ) {
+            etat.setNbDepLeft(2);
+            etat.setNbPassLeft(1);
             etat.setTurn( (etat.getTurn() + 1) % 2 );
         }
     }

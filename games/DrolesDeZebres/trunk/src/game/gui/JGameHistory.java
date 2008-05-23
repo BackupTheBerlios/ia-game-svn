@@ -1,6 +1,9 @@
 package game.gui;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -10,7 +13,7 @@ import utils.JListMutable;
 import diabalik.Historique;
 import diabalik.HistoriqueAdapter;
 
-public class JGameHistory extends JScrollPane 
+public class JGameHistory extends JPanel 
 {
 	/**
 	 * 
@@ -19,10 +22,11 @@ public class JGameHistory extends JScrollPane
 
 	Historique histo;
 	public JListMutable histoList;
+	JScrollPane histScroll;
 
 	public JGameHistory(Historique histo )
 	{
-		super();
+		super(new BorderLayout());
 
 		this.histo = histo;
 
@@ -37,7 +41,9 @@ public class JGameHistory extends JScrollPane
 		histoList.setLayoutOrientation(JList.VERTICAL);
 		histoList.setVisibleRowCount(20);
 		
-		getViewport().setView( histoList );
+		histScroll = new JScrollPane(histoList);
+		add(histScroll, BorderLayout.CENTER);
+		//getViewport().setView( histoList );
 		//setPreferredSize(new Dimension(100, -1));
 	}
 }

@@ -16,11 +16,13 @@ import org.apache.log4j.Logger;
 public class AlphaBeta {
   
     int nbVisitedStates;
-    ArrayList<Mouvement> bestMoves;
+    double estimatedStatesToVisit;
+    static int facteurBranchement = 6*4+5+1;
+    ArrayList<Mouvement> bestStrategy, tmpStrategy;
     Jeu game;
     
 //  ---------- a Private Logger ---------------------
-	private Logger logger = Logger.getLogger(AlphaBeta.class);;
+	private Logger logger = Logger.getLogger(AlphaBeta.class);
 	// --------------------------------------------------
     
     public AlphaBeta( Jeu game )
@@ -28,10 +30,28 @@ public class AlphaBeta {
         this.game = game;
     }
     
+    public ArrayList<Mouvement> getBestStrategy()
+    {
+    	return bestStrategy;
+    }
+    public int getNbVisitedStates()
+    {
+    	return nbVisitedStates;
+    }
+    public double getEstimatedStatesToVisit()
+    {
+    	return estimatedStatesToVisit;
+    }
+    
     public int findBestMoves( Joueur zeJoueur, EtatJeu etat, int depthMax )
     throws GameException
     {
         nbVisitedStates = 0;
+        estimatedStatesToVisit = Math.pow(facteurBranchement, depthMax);
+        logger.info("START depthMax="+depthMax+"  estNb="+estimatedStatesToVisit);
+        bestStrategy = new ArrayList<Mouvement>();
+        tmpStrategy = new ArrayList<Mouvement>();
+        
         return lookForMaxMoves( zeJoueur, etat, depthMax, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
     /**
@@ -48,15 +68,14 @@ public class AlphaBeta {
    public int lookForMaxMoves( Joueur zeJoueur, EtatJeu etat, int depth, int alpha, int beta )
    throws GameException
    {
-	   Mouvement bestMove = new Mouvement();
        nbVisitedStates ++;
-       logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta);
+       logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" visited="+nbVisitedStates);
        logger.debug(etat.toString());
        // Il est temps d'�valuer
        if( timeToCut( etat, depth )) {
-           logger.info("MAX["+depth+"] ==> Cutoff="+game.getValue( etat, zeJoueur ));
+           logger.info("MAX["+depth+"] ==> Cutoff="+Jeu.zeHeuristicState.getValue( etat, zeJoueur ));
     	   //zeJeu.getState().bestMoves.clear();
-           return game.getValue( etat, zeJoueur );
+           return Jeu.zeHeuristicState.getValue( etat, zeJoueur );
        }
        
        // G�n�re les mvt potentiels
@@ -65,9 +84,12 @@ public class AlphaBeta {
        //ArrayList listeMvtPot = generateNextMoves( zeJeu );
        // cherche le meilleur � partir d'ici
        
-       logger.info("MAX["+depth+"] NbMove="+listeMvtPot.size());
+       estimatedStatesToVisit -= (facteurBranchement - listeMvtPot.size()) * Math.pow(facteurBranchement, depth-1);
+       logger.info("MAX["+depth+"] NbMove="+listeMvtPot.size()+" estNb="+estimatedStatesToVisit);
        
+       int nbSeen = 0;
        for (EtatJeu tmpEtat : listeMvtPot) {
+    	   nbSeen++;
     	   int bestMin;
     	   if( tmpEtat.getTurn() == zeJoueur.couleur ) {
     		   // toujours au même (MAXIMIZING) de jouer
@@ -80,15 +102,47 @@ public class AlphaBeta {
                // meilleur mouvement
                logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" ==> new BestMove="+tmpEtat.getLastMove().toString());
                alpha = bestMin;
-               bestMove = tmpEtat.getLastMove();
+               // it adds to the actuel bestStrategy if it increases is size
+               if( depth == (bestStrategy.size()+1)) {
+            	   bestStrategy.add(0, tmpEtat.getLastMove());
+            	   logger.debug("MAX["+depth+"] bestStrategy="+bestStrategy.toString());
+               }
+               else {
+            	   // it could increase the actuel tmpStrategy
+            	   if( depth == (tmpStrategy.size()+1)) {
+            		   tmpStrategy.add(0, tmpEtat.getLastMove());
+            		   // which may become THE new bestStrategy
+                	   if( tmpStrategy.size() >= bestStrategy.size() ) {
+                		   bestStrategy = tmpStrategy;
+                		   logger.debug("MAX["+depth+"] bestStrategy="+bestStrategy.toString());
+                	   }
+            	   }
+            	   else {
+            		   // a new tmpStrategy is initiated
+            		   tmpStrategy = new ArrayList<Mouvement>();
+                	   tmpStrategy.add(0, tmpEtat.getLastMove());
+            	   }
+            	   
+               }
+               logger.debug("MAX["+depth+"] tmpStrategy="+tmpStrategy.toString());
+               
 //               zeJeu.getState().bestMoves.clear();
 //               zeJeu.getState().bestMoves.add( tmpJeu.getState().dernierMvt );
 //               zeJeu.getState().bestMoves.addAll( tmpJeu.getState().bestMoves );
            }
            if( alpha >= beta ) {
                // pas besoin de continuer, on est sur de faire mieux que l'autre...
-        	   logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" ==> Beta Cutoff ");
+        	   estimatedStatesToVisit -= (listeMvtPot.size()-nbSeen) * Math.pow(facteurBranchement, depth-1);
+        	   logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" ==> Beta Cutoff estNb="+estimatedStatesToVisit);
+        	   
                return beta;
+           }
+           if( Jeu.zeHeuristicState.isMaxValue(alpha) ) {
+        	   // pas besoin de continuer, on est sur de gagner...
+        	   estimatedStatesToVisit -= (listeMvtPot.size()-nbSeen) * Math.pow(facteurBranchement, depth-1);
+        	   logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" ==> WIN Cutoff estNb="+estimatedStatesToVisit);
+        
+        	   return alpha;
            }
        }
        logger.info("MAX["+depth+"] alpha="+alpha+" beta="+beta+" ==> return Alpha ");
@@ -97,28 +151,31 @@ public class AlphaBeta {
    public int lookForMinMoves( Joueur zeJoueur, EtatJeu etat, int depth, int alpha, int beta )
    throws GameException
    {
-	   Mouvement bestMove = new Mouvement();
        nbVisitedStates ++;
-       logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta);
+       logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta+" visited="+nbVisitedStates);
        logger.debug(etat.toString());
        // Il est temps d'�valuer
        if( timeToCut( etat, depth )) {
            //addEvalues( zeJeu );
-           logger.info("MIN["+depth+"] ==> Cutoff="+game.getValue( etat, zeJoueur ));
+           logger.info("MIN["+depth+"] ==> Cutoff="+Jeu.zeHeuristicState.getValue( etat, zeJoueur ));
            //zeJeu.getState().bestMoves.clear();
-           return game.getValue( etat, zeJoueur );
+           return Jeu.zeHeuristicState.getValue( etat, zeJoueur );
        }
        
        // G�n�re les mvt potentiels
        //ArrayList listeMvtPot = new ArrayList(generateNextMoves( zeJeu ));
        ArrayList<EtatJeu> listeMvtPot = Jeu.zeMoveGenerator.getPotentialMove(etat);
        // cherche le meilleur � partir d'ici
-       logger.info("MIN["+depth+"] NbMove="+listeMvtPot.size());
        
+       estimatedStatesToVisit -= (facteurBranchement - listeMvtPot.size()) * Math.pow(facteurBranchement, depth-1);
+       logger.info("MIN["+depth+"] NbMove="+listeMvtPot.size()+" estNb="+estimatedStatesToVisit);
+       
+       int nbSeen = 0;
        for (EtatJeu tmpEtat : listeMvtPot) {
+    	   nbSeen++;
            int bestMax;
-    	   if( tmpEtat.getTurn() == zeJoueur.couleur ) {
-    		   // toujours au même (MAXIMIZING) de jouer
+    	   if( tmpEtat.getTurn() == Joueur.otherColor(zeJoueur.couleur) ) {
+    		   // toujours au même (MINIMIZING) de jouer
     		   bestMax = lookForMinMoves( zeJoueur, tmpEtat, depth-1, alpha, beta);
     	   }
     	   else {
@@ -128,15 +185,45 @@ public class AlphaBeta {
                // meilleur mouvement pour Min
                logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta+" ==> new BestMove="+tmpEtat.getLastMove().toString());
                beta = bestMax;
-               bestMove = tmpEtat.getLastMove();
+               // it adds to the actuel bestStrategy if it increases is size
+               if( depth == (bestStrategy.size()+1)) {
+            	   bestStrategy.add(0, tmpEtat.getLastMove());
+            	   logger.debug("MIN["+depth+"] bestStrategy="+bestStrategy.toString());
+               }
+               else {
+            	   // it could increase the actuel tmpStrategy
+            	   if( depth == (tmpStrategy.size()+1)) {
+            		   tmpStrategy.add(0, tmpEtat.getLastMove());
+            		   // which may become THE new bestStrategy
+                	   if( tmpStrategy.size() >= bestStrategy.size() ) {
+                		   bestStrategy = tmpStrategy;
+                		   logger.debug("MIN["+depth+"] bestStrategy="+bestStrategy.toString());
+                	   }
+            	   }
+            	   else {
+            		   // a new tmpStrategy is initiated
+            		   tmpStrategy = new ArrayList<Mouvement>();
+                	   tmpStrategy.add(0, tmpEtat.getLastMove());
+            	   }
+            	   
+               }
+               logger.debug("MIN["+depth+"] tmpStrategy="+tmpStrategy.toString());
+               
 //               zeJeu.getState().bestMoves.clear();
 //               zeJeu.getState().bestMoves.add( tmpJeu.getState().dernierMvt );
 //               zeJeu.getState().bestMoves.addAll( tmpJeu.getState().bestMoves );
            }
            if( beta <= alpha ) {
                // pas besoin de continuer
-               logger.info("MIN"+depth+"] alpha="+alpha+" beta="+beta+" ==> Beta Cutoff ");
+        	   estimatedStatesToVisit -= (listeMvtPot.size()-nbSeen) * Math.pow(facteurBranchement, depth-1);
+               logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta+" ==> Beta Cutoff estNb="+estimatedStatesToVisit);
                return alpha;
+           }
+           if( Jeu.zeHeuristicState.isMaxValue(-beta) ) {
+        	   // pas besoin de continuer, on est sur de gagner...
+        	   estimatedStatesToVisit -= (listeMvtPot.size()-nbSeen) * Math.pow(facteurBranchement, depth-1);
+        	   logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta+" ==> WIN Cutoff  estNb="+estimatedStatesToVisit);
+        	   return beta;
            }
        }
        logger.info("MIN["+depth+"] alpha="+alpha+" beta="+beta+" ==> return Beta ");

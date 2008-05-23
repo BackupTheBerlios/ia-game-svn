@@ -20,7 +20,8 @@ public class EtatJeu extends Observable
 	public Joueur[] zeJoueurs;
 	private Mouvement lastMvt;
 	private int tour;
-	private int nbMvtLeft;
+	private int nbDepLeft;
+	private int nbPassLeft;
 	private int winner;
 	private boolean valide;
 	public String errMsg;
@@ -38,7 +39,8 @@ public class EtatJeu extends Observable
 	    zePlateau = new Plateau();
 		lastMvt = new Mouvement();
 		tour = -1;
-		nbMvtLeft = 3;
+		nbDepLeft = 2;
+		nbPassLeft = 1;
 		winner = -1;
 		
 		zeJoueurs = null;
@@ -58,7 +60,8 @@ public class EtatJeu extends Observable
         zePlateau = new Plateau( etat.zePlateau);
         lastMvt = new Mouvement ( etat.lastMvt);
         tour = etat.tour;
-        nbMvtLeft = etat.nbMvtLeft;
+        nbDepLeft = etat.nbDepLeft;
+        nbPassLeft = etat.nbPassLeft;
         winner = etat.winner;
         
         if( etat.zeJoueurs != null ) {
@@ -90,7 +93,8 @@ public class EtatJeu extends Observable
 		lastMvt = new Mouvement();
 		
 		tour = -1;
-		nbMvtLeft = 3;
+		nbDepLeft = 2;
+		nbPassLeft = 1;
 		winner = -1;
 		
 		//bestMoves = new ArrayList<Mouvement>();
@@ -116,7 +120,8 @@ public class EtatJeu extends Observable
                 return errMsg.equals( etat.errMsg );
             }
             boolean result = (tour == etat.tour) 
-            	&& (nbMvtLeft == etat.nbMvtLeft)
+            	&& (nbDepLeft == etat.nbDepLeft)
+            	&& (nbPassLeft == etat.nbPassLeft)
                 && (winner == winner);
             if( zePlateau == null ) {
                 if( etat.zePlateau != null ) return false;
@@ -162,7 +167,7 @@ public class EtatJeu extends Observable
         else {
             strbuf.append( " [personne ne doit jouer]");
         }
-		strbuf.append("\n Il reste "+nbMvtLeft+" mouvement(s)\n");
+		strbuf.append("\n Il reste "+nbDepLeft+" mouvement(s) et "+nbPassLeft+" passe\n");
 		if( valide == false ) {
             strbuf.append( "\n *** POSITION NON VALIDE : ");
             strbuf.append( errMsg+'\n' );
@@ -222,13 +227,22 @@ public class EtatJeu extends Observable
 		this.tour = tour;
 		super.setChanged();
 	}
-	public int getNbMvtLeft()
+	public int getNbDepLeft()
 	{
-		return nbMvtLeft;
+		return nbDepLeft;
 	}
-	public void setNbMvtLeft(int nbMvtLeft)
+	public int getNbPassLeft()
 	{
-		this.nbMvtLeft = nbMvtLeft;
+		return nbPassLeft;
+	}
+	public void setNbDepLeft(int nbDepLeft)
+	{
+		this.nbDepLeft = nbDepLeft;
+		super.setChanged();
+	}
+	public void setNbPassLeft(int nbPassLeft)
+	{
+		this.nbPassLeft = nbPassLeft;
 		super.setChanged();
 	}
 	public boolean isValid()

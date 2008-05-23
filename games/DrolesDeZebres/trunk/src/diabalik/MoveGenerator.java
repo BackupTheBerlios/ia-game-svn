@@ -9,6 +9,7 @@ package diabalik;
 import java.util.ArrayList;
 
 import diabalik.move.DeplacerMove;
+import diabalik.move.NullMove;
 import diabalik.move.PasserMove;
 
 public class MoveGenerator {
@@ -34,8 +35,15 @@ public class MoveGenerator {
         
         // where are the runners
         updateListPiece(etat);
-        moveRunner(etat);
-        throwBall(etat);
+        if( etat.getNbPassLeft() >0 ) {
+        	throwBall(etat);
+        }
+        if( etat.getNbDepLeft() > 0 ) {
+        	moveRunner(etat);
+        }
+        // adding a NULL move.
+        nullMove(etat);
+        
         
         return listNextState;
     }
@@ -68,6 +76,19 @@ public class MoveGenerator {
                 }
                 
             }
+        }
+    }
+    private void nullMove( EtatJeu etat )
+    {
+    	Mouvement move = new NullMove( etat.zeJoueurs[etat.getTurn()] );
+    	try {
+            EtatJeu nextState = new EtatJeu( etat );
+            move.apply(nextState);
+            listNextState.add(nextState);
+            //System.out.println("  "+move.toString()+" OK");
+        } catch (Exception e) {
+            //System.out.println(e.getMessage());
+            //System.out.println("  "+move.toString()+" INVALIDE");
         }
     }
     /**

@@ -3,31 +3,40 @@ package game.gui;
 import game.GameException;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.log4j.Logger;
+
 import diabalik.AlphaBeta;
 import diabalik.Jeu;
 
 public class JGame extends JPanel
-implements Observer
+implements Observer, PropertyChangeListener
 {
 	/**
 	 * 
@@ -36,15 +45,29 @@ implements Observer
 	JGameState guiState;
 	JGameHistory guiHistory;
 	JSpinner depthSpinner;
+	JTextArea	solveurText;
+	JProgressBar progressBar;
+	
+	Thread aThread;
+	AlgoRunnable solveurRunnable;
+	Task task;
+	AlphaBeta algo;
+	int depth;
 	
 	/** Model */
 	Jeu game;
+	
+	// ---------- a Private Logger ---------------------
+	private Logger logger = Logger.getLogger(JGame.class);
+	// --------------------------------------------------
 	
 	public JGame( Jeu game )
 	{
 		super();
 		
 		this.game = game;
+		algo = new AlphaBeta(this.game);
+		
 		guiState = new JGameState( this.game.getState() );
 		guiHistory = new JGameHistory( this.game.getHistorique());
 		// TODO : ad-hoc to JList
@@ -54,7 +77,7 @@ implements Observer
         
         getActionMap().put("generate", new GenerateMoveAction()); 
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_G, 0), "generate");
-        getActionMap().put("solve", new SolveGameAction()); 
+        getActionMap().put("solve", new SolveGameAction(this)); 
         getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "solve");
         
         
@@ -64,39 +87,57 @@ implements Observer
 	
 	void build()
 	{
+		// Need for it to have a BorderLayout as the default FlowLayout does
+		// NOT fill up space...
 		this.setLayout( new BorderLayout());
 		
 		// Game State
-		JPanel statePanel = new JPanel();
-		statePanel.setBorder( BorderFactory.createTitledBorder("Etat du Jeu"));
-		statePanel.add( guiState );
+		JPanel statePanel = new JPanel(new BorderLayout(5,5));
+		statePanel.setBorder(BorderFactory.createTitledBorder("Etat du Jeu"));
+		statePanel.add( guiState, BorderLayout.CENTER );
 		this.add( statePanel, BorderLayout.CENTER );
 		
 		// Depth Panel
 		
+		// Solveur Panel
+		JPanel solveurPanel = new JPanel( new BorderLayout(10,10));
+		solveurPanel.setBorder( BorderFactory.createTitledBorder("AlphaBeta"));
 		
-		// History State
-		JPanel rightPanel = new JPanel();
-		rightPanel.setLayout( new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
-		JPanel depthPanel = new JPanel();
-		depthPanel.setBorder( BorderFactory.createTitledBorder("AlphaBeta"));
-		
+		JPanel depthPanel = new JPanel(new BorderLayout());
 		JLabel depthLabel = new JLabel("Prof.");
-		depthPanel.add( depthLabel);
+		depthPanel.add( depthLabel, BorderLayout.BEFORE_LINE_BEGINS);
 		SpinnerModel depthModel = new SpinnerNumberModel( 1, //initial value
                 0, //min
                 20, //max
                 1);                //step
 		depthSpinner = new JSpinner(depthModel);
-		depthPanel.add(depthSpinner);
-		rightPanel.add( depthPanel);
+		depthPanel.add(depthSpinner, BorderLayout.CENTER);
+		JButton solveButton = new JButton();
+		solveButton.setText(" Solve ");
+		solveButton.setAction( new SolveGameAction(this) );
+		depthPanel.add( solveButton, BorderLayout.AFTER_LAST_LINE);
+		solveurPanel.add( depthPanel, BorderLayout.BEFORE_LINE_BEGINS);
 		
-		JPanel historyPanel = new JPanel();
+		solveurText = new JTextArea();
+		solveurText.setLineWrap(true);
+		solveurText.setEditable(false);
+		solveurText.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		solveurPanel.add( solveurText, BorderLayout.CENTER);
+		
+		progressBar = new JProgressBar(0, 100);
+        progressBar.setValue(0);
+        solveurPanel.add( progressBar, BorderLayout.BEFORE_FIRST_LINE );
+		
+		this.add( solveurPanel, BorderLayout.PAGE_END);
+		
+		// History Panel
+		// Need for it to have a BorderLayout as the default FlowLayout does
+		// NOT fill up space...
+		JPanel historyPanel = new JPanel(new BorderLayout());
 		historyPanel.setBorder( BorderFactory.createTitledBorder("Historique"));
-		historyPanel.add( guiHistory );
-		rightPanel.add( historyPanel);
+		historyPanel.add( guiHistory, BorderLayout.CENTER );
 		
-		this.add( rightPanel, BorderLayout.LINE_END );
+		this.add( historyPanel, BorderLayout.LINE_END );
 		
 	}
 
@@ -163,24 +204,120 @@ implements Observer
     private class SolveGameAction extends AbstractAction
     {
     	private static final long serialVersionUID = 1L;
-
+    	JGame guiGame;
+    	
+    	public SolveGameAction(JGame guiGame)
+    	{
+    		this.guiGame = guiGame;
+    		putValue(Action.NAME, " Solve ");
+    		putValue(Action.ACCELERATOR_KEY, KeyEvent.VK_S);
+    	}
+    	
         public void actionPerformed(ActionEvent e)
         {
-        	AlphaBeta solveur = new AlphaBeta(game);
-        	SpinnerModel depthModel = depthSpinner.getModel();
-        	int depth = 1;
+        	solveurText.setText(null);
+    		solveurText.setText("Recherche de solution");
+    		
+    		SpinnerModel depthModel = depthSpinner.getModel();
+        	depth = 1;
             if (depthModel instanceof SpinnerNumberModel) {
                 depth = ((SpinnerNumberModel) depthModel).getNumber().intValue();;
             }
-        	System.out.println("############## SOLVING #############");
-        	try {
-        		solveur.findBestMoves(game.getJoueurs()[game.getState().getTurn()], game.getState(), depth);
+            progressBar.setIndeterminate(true);
+            
+        	// Instances of javax.swing.SwingWorker are not reusuable, so
+            // we create new instances as needed.
+            task = new Task();
+            task.addPropertyChangeListener(guiGame);
+            task.execute();
+        }
+    }
+    /**
+     * Invoked when task's progress property changes.
+     */
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+    	logger.info("Main setText : " + evt.getPropertyName());
+        if ("progress" == evt.getPropertyName()) {
+        	solveurText.append( algo.getNbVisitedStates() + " / " + algo.getEstimatedStatesToVisit() + "\n ");
+            int progress = (Integer) evt.getNewValue();
+            progressBar.setValue(progress);
+        } 
+    }
+    
+    /**
+     * A SwingWorker Task that starts the solveur and watch its progression...
+     * @author alain
+     *
+     */
+    class Task extends SwingWorker<Void, Void> {
+    	
+        /*
+         * Main task. Executed in background thread.
+         */
+        @Override
+        public Void doInBackground()
+        {
+        	// runs the algorithme;
+            
+    		solveurRunnable = new AlgoRunnable();
+			aThread = new Thread(solveurRunnable);
+			aThread.start();
+			
+			logger.info("Task");
+			while( aThread.isAlive() ) {
+				solveurText.setText(algo.getNbVisitedStates() + " / " + algo.getEstimatedStatesToVisit() + "\n ");
+				logger.info("Task");
+				// Sleep 
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {}
+			}
+            return null;
+        }
+
+        /*
+         * Executed in event dispatching thread
+         */
+        @Override
+        public void done()
+        {
+        	progressBar.setIndeterminate(false);
+        	solveurText.setText(null);
+    		solveurText.append( algo.getNbVisitedStates() + " états visités\n");
+    		solveurText.append( algo.getBestStrategy().toString());
+        }
+    }
+    
+    /**
+     * A thread for running the solver.
+     * @author alain
+     *
+     */
+    class AlgoRunnable implements Runnable
+	{
+		boolean stopFlag  = false;
+		
+		AlgoRunnable()
+		{
+			stopFlag = false;
+	    }
+		public void run()
+		{
+			
+            try {
+        		algo.findBestMoves(game.getJoueurs()[game.getState().getTurn()], game.getState(), depth);
         	}
         	catch (GameException ge) {
 				System.err.println("SOLVEUR : "+ ge.getMessage());
 			}
-        	System.out.println("####################################");
-        }
-    }
+        	
+			stop();
+		}
+		public void stop()
+		{
+			stopFlag = true;
+		}
+	}
     
 }

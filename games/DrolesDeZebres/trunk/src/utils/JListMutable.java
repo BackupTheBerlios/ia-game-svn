@@ -44,7 +44,7 @@ public class JListMutable extends JList implements CellEditorListener{
  
     public JListMutable(ListModel dataModel){ 
         super(dataModel); 
-        init(); 
+        init();
     } 
  
     private void init(){ 
